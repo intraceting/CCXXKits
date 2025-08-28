@@ -232,3 +232,10 @@ ${SHELLDIR}/nghttp2/build.sh "${BUILD_FLAGS}" || exit $?
 
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
+
+
+#
+${SHELLDIR}/libarchive/build.sh "${BUILD_FLAGS}" || exit $?
+
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
