@@ -24,7 +24,26 @@ COMPILER_BIN=$(which "${1}")
 #GCC组织承诺, 在GCC7(包括)之后发布的版本, 当主版号相同时会保持ABI稳定, 副版本号及修正版本号的变化不影向兼容性.
 
 #
-TARGET_VERSION=$(${COMPILER_BIN} "-dumpversion" 2>>/dev/null)
+VERSION_STR=$(${COMPILER_BIN} "-dumpversion" 2>>/dev/null)
 checkReturnCode
+
 #
-echo "${TARGET_VERSION}"
+echo "${VERSION_STR}"
+exit 0
+
+#
+if [ "${VERSION_STR}" != "" ];then
+{
+    VERSION_MAJOR=$(echo ${VERSION_STR} | cut -d '.' -f 1)
+    if [ "${VERSION_MAJOR}" -ge 7 ]; then
+        echo "${VERSION_MAJOR}"
+    else 
+        echo "${TARGET_VERSION}"
+        
+    #
+    exit 0
+}
+fi 
+
+#
+exit 1
