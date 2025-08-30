@@ -106,8 +106,10 @@ cd ${SRC_PATH}
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 #配置.
 ./configure \
+    --with-gcc-major-version-only \
     --host=${C2X2K_TARGET_MACHINE} \
     --prefix=${C2X2K_SYSROOT_PATH}/ \
+    --with-build-sysroot=${C2X2K_TARGET_COMPILER_SYSROOT} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     AR=${C2X2K_TARGET_COMPILER_AR} \

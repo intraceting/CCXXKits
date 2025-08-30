@@ -73,7 +73,9 @@ done
 echo "Building ${PROJECT_NAME}, ..."
 
 #
-SRC_FILE=${SHELLDIR}/libarchive-3.8.1.tar.xz
+#SRC_FILE=${SHELLDIR}/libarchive-3.8.1.tar.xz
+SRC_FILE=${SHELLDIR}/libarchive-3.6.2.tar.gz
+
 #
 SRC_PATH=${C2X2K_BUILD_PATH}/${PROJECT_NAME}/
 
@@ -87,6 +89,10 @@ mkdir -p "${SRC_PATH}"
 
 #
 tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG_FILE} 2>&1
+
+#
+if [ 1 -eq 1 ];then
+{
 
 #
 BUILD_PATH_TMP=${SRC_PATH}/build.tmp/
@@ -116,6 +122,7 @@ ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
     -DCMAKE_INSTALL_PREFIX=${C2X2K_SYSROOT_PATH}/ \
     -DCMAKE_C_COMPILER=${C2X2K_TARGET_COMPILER_C} \
     -DCMAKE_CXX_COMPILER=${C2X2K_TARGET_COMPILER_CXX} \
+    -DCMAKE_SYSROOT=${C2X2K_TARGET_COMPILER_SYSROOT} \
     -DCMAKE_FIND_ROOT_PATH=${C2X2K_SYSROOT_PATH}/ \
     -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
@@ -127,6 +134,41 @@ ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
+}
+else 
+{
+
+#Switch to the source directory.
+cd ${SRC_PATH}
+
+echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
+
+#
+./build/autogen.sh >>${C2X2K_BUILD_LOG_FILE} 2>&1
+exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
+
+#
+if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ];then
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
+elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ];then
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
+else
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
+fi
+
+#
+./configure \
+    ${CONF_PARAMS} \
+    --prefix=${C2X2K_SYSROOT_PATH} \
+    CC=${C2X2K_TARGET_COMPILER_C} \
+    CXX=${C2X2K_TARGET_COMPILER_CXX} \
+    CFLAGS="-std=c99 -fPIC" \
+    CXXFLAGS="-std=c++11 -fPIC" \
+    >>${C2X2K_BUILD_LOG_FILE} 2>&1
+exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
+
+}
+fi
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
