@@ -46,16 +46,16 @@ PROJECT_NAME=$(basename ${SHELLDIR})
 PROJECT_NAME=${PROJECT_NAME^^}
 
 #
-if [ $(check_keyword ${BUILD_FLAGS} "rebuild-libpsl") -eq 0 ];then
+if [ $(check_keyword ${BUILD_FLAGS} "rebuild-libidn2") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libpsl.a"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libpsl.so"
-CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libpsl.a"
-CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libpsl.so"
+CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libidn2.a"
+CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libidn2.so"
+CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libidn2.a"
+CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libidn2.so"
 }
 else
 {
-CHECK_LISTS[0]="/tmp/rebuild-libpsl"
+CHECK_LISTS[0]="/tmp/rebuild-libidn2"
 }
 fi
 
@@ -73,8 +73,7 @@ done
 echo "Building ${PROJECT_NAME}, ..."
 
 #
-SRC_FILE=${SHELLDIR}/libpsl-0.21.5.tar.xz
-SRC_LIST_FILE=${SHELLDIR}/list-5db9b65997e3c9230ac4353b01994c2ae9667cb9.tar.xz
+SRC_FILE=${SHELLDIR}/libidn2-2.3.7.tar.gz
 #
 SRC_PATH=${C2X2K_BUILD_PATH}/${PROJECT_NAME}/
 
@@ -89,18 +88,8 @@ mkdir -p "${SRC_PATH}"
 #
 tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG_FILE} 2>&1
 
-#
-tar --strip-components=1 -xvf "${SRC_LIST_FILE}" -C "${SRC_PATH}/list" >>${C2X2K_BUILD_LOG_FILE} 2>&1
-
 #Switch to the source directory.
 cd ${SRC_PATH}
-
-#
-chmod +0500 autogen.sh
-    
-#
-./autogen.sh >>${C2X2K_BUILD_LOG_FILE} 2>&1
-exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
 #
 if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ];then
@@ -115,6 +104,8 @@ fi
 ./configure \
     ${CONF_PARAMS} \
     --prefix=${C2X2K_SYSROOT_PATH} \
+    --with-sysroot="${C2X2K_TARGET_COMPILER_SYSROOT}" \
+    --disable-valgrind-tests \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     CFLAGS="-fPIC -Wl,-rpath-link=${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE} -Wl,-rpath-link=${C2X2K_SYSROOT_PATH}/lib" \
