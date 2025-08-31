@@ -46,16 +46,16 @@ PROJECT_NAME=$(basename ${SHELLDIR})
 PROJECT_NAME=${PROJECT_NAME^^}
 
 #
-if [ $(check_keyword ${BUILD_FLAGS} "rebuild-curl") -eq 0 ];then
+if [ $(check_keyword ${BUILD_FLAGS} "rebuild-faiss") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libcurl.a"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libcurl.so"
-CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libcurl.a"
-CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libcurl.so"
+CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfaiss.a"
+CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfaiss.so"
+CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libfaiss.a"
+CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libfaiss.so"
 }
 else
 {
-CHECK_LISTS[0]="/tmp/rebuild-curl"
+CHECK_LISTS[0]="/tmp/rebuild-faiss"
 }
 fi
 
@@ -73,7 +73,8 @@ done
 echo "Building ${PROJECT_NAME}, ..."
 
 #
-SRC_FILE=${SHELLDIR}/curl-curl-8_15_0.tar.gz
+#SRC_FILE=${SHELLDIR}/faiss-1.7.4.tar.xz
+SRC_FILE=${SHELLDIR}/faiss-1.12.0.tar.gz
 #
 SRC_PATH=${C2X2K_BUILD_PATH}/${PROJECT_NAME}/
 
@@ -90,6 +91,7 @@ tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG
 
 #
 BUILD_PATH_TMP=${SRC_PATH}/build.tmp/
+
 #创建不存的路径。
 mkdir -p "${BUILD_PATH_TMP}"
 
@@ -97,7 +99,7 @@ mkdir -p "${BUILD_PATH_TMP}"
 cd ${BUILD_PATH_TMP}
 
 #指定交叉编译环境的目录
-#set(CMAKE_FIND_ROOT_PATH ${TARGET_COMPILER_SYSROOT})
+#set(CMAKE_FIND_ROOT_PATH ${C2X2K_TARGET_COMPILER_SYSROOT})
 #从来不在指定目录(交叉编译)下查找工具程序。(编译时利用的是宿主的工具)
 #set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 #只在指定目录(交叉编译)下查找库文件
@@ -113,7 +115,6 @@ echo "##########################################################################
 ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
     -DCMAKE_PREFIX_PATH=${C2X2K_SYSROOT_PATH}/ \
     -DCMAKE_INSTALL_PREFIX=${C2X2K_SYSROOT_PATH}/ \
-    -DCMAKE_SYSROOT=${C2X2K_TARGET_COMPILER_SYSROOT} \
     -DCMAKE_C_COMPILER=${C2X2K_TARGET_COMPILER_C} \
     -DCMAKE_CXX_COMPILER=${C2X2K_TARGET_COMPILER_CXX} \
     -DCMAKE_FIND_ROOT_PATH=${C2X2K_SYSROOT_PATH}/ \
@@ -121,12 +122,16 @@ ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
     -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY \
-    -DCMAKE_C_FLAGS="-fPIC -Wl,-rpath-link=${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE} -Wl,-rpath-link=${C2X2K_SYSROOT_PATH}/lib" \
-    -DCMAKE_CXX_FLAGS="-fPIC -Wl,-rpath-link=${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE} -Wl,-rpath-link=${C2X2K_SYSROOT_PATH}/lib" \
-    -DBUILD_SHARED_LIBS=ON \
-    -DBUILD_LIBCURL_DOCS=OFF \
-    -DBUILD_LIBCURL_DOCS=OFF \
-    -DENABLE_CURL_MANUAL=OFF \
+    -DCMAKE_C_FLAGS="-fPIC -D_GLIBCXX_USE_C99_MATH" \
+    -DCMAKE_CXX_FLAGS="-fPIC -D_GLIBCXX_USE_C99_MATH" \
+    -DFAISS_ENABLE_GPU=OFF \
+    -DFAISS_GPU_STATIC=OFF \
+    -DFAISS_ENABLE_MKL=OFF \
+    -DFAISS_ENABLE_PYTHON=OFF \
+    -DFAISS_ENABLE_C_API=ON \
+    -DFAISS_ENABLE_EXTRAS=ON \
+    -DFAISS_USE_LTO=OFF \
+    -DBUILD_TESTING=OFF \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
@@ -144,6 +149,7 @@ make install  >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
+
 
 #恢复工作目录。
 cd ${SHELLDIR}

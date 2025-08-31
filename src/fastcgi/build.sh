@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-fastcgi") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfastcgi.a"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfastcgi.so"
-CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libfastcgi.a"
-CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libfastcgi.so"
+CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfcgi.a"
+CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfcgi.so"
+CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libfcgi.a"
+CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libfcgi.so"
 }
 else
 {
@@ -73,7 +73,7 @@ done
 echo "Building ${PROJECT_NAME}, ..."
 
 #
-SRC_FILE=${SHELLDIR}/fcgi2-2.4.2.tar.xz
+SRC_FILE=${SHELLDIR}/fcgi2-2.4.6.tar.gz
 #
 SRC_PATH=${C2X2K_BUILD_PATH}/${PROJECT_NAME}/
 
@@ -110,8 +110,8 @@ exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
     --prefix=${C2X2K_SYSROOT_PATH} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
-    CFLAGS="-std=c99 -fPIC -DEOF=-1" \
-    CXXFLAGS="-std=c++11 -fPIC -DEOF=-1" \
+    CFLAGS="-std=c99 -fPIC -D_GNU_SOURCE" \
+    CXXFLAGS="-std=c++11 -fPIC -D_GNU_SOURCE" \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
