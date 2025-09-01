@@ -48,7 +48,7 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-openssh") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/bin/sshd"
+CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/sbin/sshd"
 }
 else
 {

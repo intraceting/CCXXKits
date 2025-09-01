@@ -107,11 +107,12 @@ else
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
 fi
 
+#    --with-sysroot="${C2X2K_TARGET_COMPILER_SYSROOT}" \
+
 #
 ./configure \
     ${CONF_PARAMS} \
     --prefix=${C2X2K_SYSROOT_PATH} \
-    --with-sysroot="${C2X2K_TARGET_COMPILER_SYSROOT}" \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     CFLAGS="-fPIC" \

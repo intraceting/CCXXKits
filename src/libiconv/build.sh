@@ -46,14 +46,16 @@ PROJECT_NAME=$(basename ${SHELLDIR})
 PROJECT_NAME=${PROJECT_NAME^^}
 
 #
-if [ $(check_keyword ${BUILD_FLAGS} "rebuild-gdb") -eq 0 ];then
+if [ $(check_keyword ${BUILD_FLAGS} "rebuild-libiconv") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/bin/gdb"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/bin/gdbserver"
+CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libiconv.a"
+CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libiconv.so"
+CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libiconv.a"
+CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libiconv.so"
 }
 else
 {
-CHECK_LISTS[0]="/tmp/rebuild-gdb"
+CHECK_LISTS[0]="/tmp/rebuild-libiconv"
 }
 fi
 
@@ -73,10 +75,7 @@ done
 echo "Building ${PROJECT_NAME}, ..."
 
 #
-SRC_GDB_FILE=${SHELLDIR}/gdb-16.2.tar.xz
-SRC_GMP_FILE=${SHELLDIR}/gmp-6.3.0.tar.xz
-SRC_MPC_FILE=${SHELLDIR}/mpc-1.3.1.tar.gz 
-SRC_MPFR_FILE=${SHELLDIR}/mpfr-4.2.1.tar.xz
+SRC_FILE=${SHELLDIR}/libiconv-1.18.tar.gz
 #
 SRC_PATH=${C2X2K_BUILD_PATH}/${PROJECT_NAME}/
 
@@ -87,17 +86,7 @@ fi
 
 #
 mkdir -p "${SRC_PATH}"
-tar --strip-components=1 -xvf "${SRC_GDB_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG_FILE} 2>&1
-#
-mkdir -p ${SRC_PATH}/gmp
-tar --strip-components=1 -xvf "${SRC_GMP_FILE}" -C ${SRC_PATH}/gmp >>${C2X2K_BUILD_LOG_FILE} 2>&1
-#
-mkdir -p ${SRC_PATH}/mpc
-tar --strip-components=1 -xvf "${SRC_MPC_FILE}" -C ${SRC_PATH}/mpc >>${C2X2K_BUILD_LOG_FILE} 2>&1
-#
-mkdir -p ${SRC_PATH}/mpfr
-tar --strip-components=1 -xvf "${SRC_MPFR_FILE}" -C ${SRC_PATH}/mpfr >>${C2X2K_BUILD_LOG_FILE} 2>&1
-
+tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG_FILE} 2>&1
 
 
 #Switch to the source directory.
@@ -109,7 +98,6 @@ echo "##########################################################################
 
 #配置.
 ./configure \
-    --with-gcc-major-version-only \
     --host=${C2X2K_TARGET_MACHINE} \
     --prefix=${C2X2K_SYSROOT_PATH} \
     CC=${C2X2K_TARGET_COMPILER_C} \
