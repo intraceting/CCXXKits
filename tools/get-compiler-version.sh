@@ -28,10 +28,6 @@ VERSION_STR=$(${COMPILER_BIN} "-dumpversion" 2>>/dev/null)
 checkReturnCode
 
 #
-echo "${VERSION_STR}"
-exit 0
-
-#
 if [ "${VERSION_STR}" != "" ];then
 {
     VERSION_MAJOR=$(echo ${VERSION_STR} | cut -d '.' -f 1)
