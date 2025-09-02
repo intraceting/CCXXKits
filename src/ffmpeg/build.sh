@@ -113,12 +113,15 @@ chmod 0755 ./ffbuild/*.sh
     --enable-cross-compile \
     --cross-prefix=${C2X2K_TARGET_COMPILER_PREFIX} \
     --extra-cflags="-I${C2X2K_SYSROOT_PATH}/include" \
-    --extra-ldflags="-L${C2X2K_SYSROOT_PATH}/lib -L${C2X2K_SYSROOT_PATH}/lib64" \
+    --extra-ldflags="-Wl,-rpath-link=${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE} -Wl,-rpath-link=${C2X2K_SYSROOT_PATH}/lib" \
     --extra-libs="-lpthread -lm -ldl" \
     --pkg-config="pkg-config" \
     --enable-gpl \
     --enable-libx265 \
     --enable-libx264 \
+    --enable-libfdk-aac \
+    --enable-libxml2 \
+    --enable-openssl \
     --enable-pic \
     --enable-pthreads \
     --enable-shared \
