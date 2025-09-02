@@ -28,18 +28,17 @@ VERSION_STR=$(${COMPILER_BIN} "-dumpversion" 2>>/dev/null)
 checkReturnCode
 
 #
-if [ "${VERSION_STR}" != "" ];then
-{
-    VERSION_MAJOR=$(echo ${VERSION_STR} | cut -d '.' -f 1)
-    if [ "${VERSION_MAJOR}" -ge 7 ]; then
-        echo "${VERSION_MAJOR}"
-    else 
-        echo "${TARGET_VERSION}"
-        
-    #
-    exit 0
-}
-fi 
+if [ "${VERSION_STR}" == "" ];then
+exit 1
+fi
 
 #
-exit 1
+VERSION_MAJOR=$(echo ${VERSION_STR} | cut -d '.' -f 1)
+if [ "${VERSION_MAJOR}" -ge 7 ]; then
+    echo "${VERSION_MAJOR}"
+else 
+    echo "${TARGET_VERSION}"
+fi
+
+#
+exit 0
