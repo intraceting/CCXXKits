@@ -379,12 +379,12 @@ if [ "${NATIVE_PLATFORM}" == "x86_64" ];then
     NATIVE_ARCH="amd64"
     NATIVE_BITWIDE="64"
 }
-elif [ "${NATIVE_PLATFORM}" == "aarch64" ] || [ "${NATIVE_PLATFORM}" == "armv8l" ];then
+elif [ "${NATIVE_PLATFORM}" == "aarch64" ] || [ "${NATIVE_PLATFORM}" == "armv8" ];then
 {
     NATIVE_ARCH="arm64"
     NATIVE_BITWIDE="64"
 }
-elif [ "${NATIVE_PLATFORM}" == "arm" ] || [ "${NATIVE_PLATFORM}" == "armv7l" ] || [ "${NATIVE_PLATFORM}" == "armv7a" ];then
+elif [ "${NATIVE_PLATFORM}" == "arm" ] || [ "${NATIVE_PLATFORM}" == "armv7" ];then
 {
     NATIVE_ARCH="arm"
     NATIVE_BITWIDE="32"
@@ -397,12 +397,12 @@ if [ "${TARGET_PLATFORM}" == "x86_64" ];then
     TARGET_ARCH="amd64"
     TARGET_BITWIDE="64"
 }
-elif [ "${TARGET_PLATFORM}" == "aarch64" ] || [ "${TARGET_PLATFORM}" == "armv8l" ];then
+elif [ "${TARGET_PLATFORM}" == "aarch64" ] || [ "${TARGET_PLATFORM}" == "armv8" ];then
 {
     TARGET_ARCH="arm64"
     TARGET_BITWIDE="64"
 }
-elif [ "${TARGET_PLATFORM}" == "arm" ] || [ "${TARGET_PLATFORM}" == "armv7l" ] || [ "${TARGET_PLATFORM}" == "armv7a" ];then
+elif [ "${TARGET_PLATFORM}" == "arm" ] || [ "${TARGET_PLATFORM}" == "armv7" ];then
 {
     TARGET_ARCH="arm"
     TARGET_BITWIDE="32"

@@ -116,9 +116,9 @@ cd ${BUILD_PATH_TMP}
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #
-if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ];then
+if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM}" == "armv8" ];then
     CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64"
-elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ];then
+elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM}" == "armv7" ];then
     CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=armv7"
 else
     CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64"
@@ -161,9 +161,9 @@ tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG
 cd ${SRC_PATH}
 
 #
-if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ];then
+if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM}" == "armv8" ];then
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_SYSROOT_PATH}/../${C2X2K_NATIVE_RELEASE_NAME}/bin/protoc"
-elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ];then
+elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM}" == "armv7" ];then
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_SYSROOT_PATH}/../${C2X2K_NATIVE_RELEASE_NAME}/bin/protoc"
 else
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_SYSROOT_PATH}/../${C2X2K_NATIVE_RELEASE_NAME}/bin/protoc"

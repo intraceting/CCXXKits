@@ -91,9 +91,9 @@ tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG
 #Switch to the source directory.
 cd ${SRC_PATH}
 
-if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ];then
+if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM}" == "armv8" ];then
     MAKE_MORE_CONF="linux-aarch64"
-elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] ;then
+elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM}" == "armv7" ];then
     MAKE_MORE_CONF="linux-armv4"
 else
     MAKE_MORE_CONF="linux-x86_64"

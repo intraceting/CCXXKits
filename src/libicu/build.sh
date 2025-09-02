@@ -105,9 +105,9 @@ fi
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #
-if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ];then
+if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM}" == "armv8" ];then
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${CROSS_BUILD_PATH}"
-elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ];then
+elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM}" == "armv7" ];then
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${CROSS_BUILD_PATH}"
 elif [ "${C2X2K_NATIVE_GLIBC_MAX_VERSION}" != ${C2X2K_TARGET_GLIBC_MAX_VERSION} ];then
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${CROSS_BUILD_PATH}"
