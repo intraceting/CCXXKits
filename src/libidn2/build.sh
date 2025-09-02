@@ -106,7 +106,6 @@ fi
 ./configure \
     ${CONF_PARAMS} \
     --prefix=${C2X2K_SYSROOT_PATH} \
-
     --disable-valgrind-tests \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
