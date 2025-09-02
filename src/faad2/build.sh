@@ -110,6 +110,9 @@ cd ${BUILD_PATH_TMP}
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
+#    -DCMAKE_EXE_LINKER_FLAGS="-lm" \
+#    -DCMAKE_SHARED_LINKER_FLAGS="-lm" \
+
 #
 ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
     -DCMAKE_PREFIX_PATH=${C2X2K_SYSROOT_PATH}/ \
@@ -123,8 +126,8 @@ ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
     -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY \
     -DCMAKE_C_FLAGS="-fPIC" \
     -DCMAKE_CXX_FLAGS="-fPIC" \
-    -DCMAKE_EXE_LINKER_FLAGS="-lm" \
-    -DCMAKE_SHARED_LINKER_FLAGS="-lm" \
+    -DCMAKE_C_STANDARD_LIBRARIES="-lm" \
+    -DCMAKE_CXX_STANDARD_LIBRARIES="-lm" \
     -DBUILD_SHARED_LIBS=ON \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
