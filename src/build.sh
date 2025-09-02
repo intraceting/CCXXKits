@@ -188,6 +188,32 @@ ${SHELLDIR}/harfbuzz/build.sh "${BUILD_FLAGS}" || exit $?
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
 
+#
+${SHELLDIR}/mp4v2/build.sh "${BUILD_FLAGS}" || exit $?
+
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
+
+#
+${SHELLDIR}/faac/build.sh "${BUILD_FLAGS}" || exit $?
+
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
+
+
+#
+${SHELLDIR}/faad2/build.sh "${BUILD_FLAGS}" || exit $?
+
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
+
+
+#
+${SHELLDIR}/fdk-aac/build.sh "${BUILD_FLAGS}" || exit $?
+
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
+
 
 #
 ${SHELLDIR}/ffmpeg/build.sh "${BUILD_FLAGS}" || exit $?
