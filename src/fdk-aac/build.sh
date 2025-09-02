@@ -46,16 +46,16 @@ PROJECT_NAME=$(basename ${SHELLDIR})
 PROJECT_NAME=${PROJECT_NAME^^}
 
 #
-if [ $(check_keyword ${BUILD_FLAGS} "rebuild-fdk-acc") -eq 0 ];then
+if [ $(check_keyword ${BUILD_FLAGS} "rebuild-fdk-aac") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfdk-acc.a"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfdk-acc.so"
-CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libfdk-acc.a"
-CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libfdk-acc.so"
+CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfdk-aac.a"
+CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfdk-aac.so"
+CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libfdk-aac.a"
+CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libfdk-aac.so"
 }
 else
 {
-CHECK_LISTS[0]="/tmp/rebuild-fdk-acc"
+CHECK_LISTS[0]="/tmp/rebuild-fdk-aac"
 }
 fi
 
