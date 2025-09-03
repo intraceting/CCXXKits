@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-boost") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
-CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libboost_system.a"
-CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libboost_system.so"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
+CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
+CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libboost_system.a"
+CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libboost_system.so"
 }
 else
 {
@@ -116,7 +116,7 @@ exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #安装。
-./b2 --prefix=${C2X2K_SYSROOT_PATH}/ toolset=gcc install  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+./b2 --prefix=${C2X2K_PREFIX_PATH}/ toolset=gcc install  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}

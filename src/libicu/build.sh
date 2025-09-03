@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-libicu") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libicuuc.a"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libicuuc.so"
-CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libicuuc.a"
-CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libicuuc.so"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libicuuc.a"
+CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libicuuc.so"
+CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libicuuc.a"
+CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libicuuc.so"
 }
 else
 {
@@ -118,7 +118,7 @@ fi
 #
 ./icu4c/source/configure \
     ${CONF_PARAMS} \
-    --prefix=${C2X2K_SYSROOT_PATH} \
+    --prefix=${C2X2K_PREFIX_PATH} \
     --enable-icu-config \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \

@@ -47,10 +47,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-openssl") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libssl.a"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libssl.so"
-CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libssl.a"
-CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libssl.so"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libssl.a"
+CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libssl.so"
+CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libssl.a"
+CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libssl.so"
 }
 else
 {
@@ -106,7 +106,7 @@ export CFLAGS="-fPIC"
 export CPPFLAGS="-fPIC"
 #
 ${SRC_PATH}/Configure \
-    --prefix=${C2X2K_SYSROOT_PATH}/ \
+    --prefix=${C2X2K_PREFIX_PATH}/ \
     --cross-compile-prefix=${C2X2K_TARGET_COMPILER_PREFIX} \
     ${MAKE_MORE_CONF} \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1

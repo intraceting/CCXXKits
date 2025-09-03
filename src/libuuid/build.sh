@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-libuuid") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libuuid.a"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libuuid.so"
-CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libuuid.a"
-CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libuuid.so"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libuuid.a"
+CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libuuid.so"
+CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libuuid.a"
+CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libuuid.so"
 }
 else
 {
@@ -103,7 +103,7 @@ fi
 #
 ./configure \
     ${CONF_PARAMS} \
-    --prefix=${C2X2K_SYSROOT_PATH} \
+    --prefix=${C2X2K_PREFIX_PATH} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     CFLAGS="-std=c99 -fPIC" \

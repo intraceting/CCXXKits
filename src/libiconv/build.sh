@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-libiconv") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libiconv.a"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libiconv.so"
-CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libiconv.a"
-CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libiconv.so"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libiconv.a"
+CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libiconv.so"
+CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libiconv.a"
+CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libiconv.so"
 }
 else
 {
@@ -99,7 +99,7 @@ echo "##########################################################################
 #配置.
 ./configure \
     --host=${C2X2K_TARGET_MACHINE} \
-    --prefix=${C2X2K_SYSROOT_PATH} \
+    --prefix=${C2X2K_PREFIX_PATH} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     AR=${C2X2K_TARGET_COMPILER_AR} \

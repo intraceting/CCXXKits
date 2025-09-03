@@ -47,10 +47,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-openblas") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libopenblas.a"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libopenblas.so"
-CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libopenblas.a"
-CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libopenblas.so"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libopenblas.a"
+CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libopenblas.so"
+CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libopenblas.a"
+CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libopenblas.so"
 }
 else
 {
@@ -104,7 +104,7 @@ echo "##########################################################################
 #编译。
 make -j${C2X2K_BUILD_NPROC} shared \
     ${MAKE_MORE_CONF} \
-    PREFIX="${C2X2K_SYSROOT_PATH}/" \
+    PREFIX="${C2X2K_PREFIX_PATH}/" \
     HOSTCC="${C2X2K_NATIVE_COMPILER_C}" \
     CC="${C2X2K_TARGET_COMPILER_C}" \
     AR="${C2X2K_TARGET_COMPILER_AR}" \
@@ -118,7 +118,7 @@ echo "##########################################################################
 #安装。
 make install \
     ${MAKE_MORE_CONF} \
-    PREFIX="${C2X2K_SYSROOT_PATH}/" \
+    PREFIX="${C2X2K_PREFIX_PATH}/" \
     HOSTCC="${C2X2K_NATIVE_COMPILER_C}" \
     CC="${C2X2K_TARGET_COMPILER_C}" \
     AR="${C2X2K_TARGET_COMPILER_AR}" \

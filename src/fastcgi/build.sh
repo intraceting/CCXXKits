@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-fastcgi") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfcgi.a"
-CHECK_LISTS[1]="${C2X2K_SYSROOT_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfcgi.so"
-CHECK_LISTS[2]="${C2X2K_SYSROOT_PATH}/lib/libfcgi.a"
-CHECK_LISTS[3]="${C2X2K_SYSROOT_PATH}/lib/libfcgi.so"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfcgi.a"
+CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfcgi.so"
+CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libfcgi.a"
+CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libfcgi.so"
 }
 else
 {
@@ -107,7 +107,7 @@ exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 #
 ./configure \
     ${CONF_PARAMS} \
-    --prefix=${C2X2K_SYSROOT_PATH} \
+    --prefix=${C2X2K_PREFIX_PATH} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     CFLAGS="-std=c99 -fPIC -D_GNU_SOURCE" \

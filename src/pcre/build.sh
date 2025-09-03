@@ -46,16 +46,16 @@ PROJECT_NAME=$(basename ${SHELLDIR})
 PROJECT_NAME=${PROJECT_NAME^^}
 
 #
-if [ $(check_keyword ${BUILD_FLAGS} "rebuild-faiss") -eq 0 ];then
+if [ $(check_keyword ${BUILD_FLAGS} "rebuild-prce") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfaiss.a"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfaiss.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libfaiss.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libfaiss.so"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libpcreposix.a"
+CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libpcreposix.so"
+CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libpcreposix.a"
+CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libpcreposix.so"
 }
 else
 {
-CHECK_LISTS[0]="/tmp/rebuild-faiss"
+CHECK_LISTS[0]="/tmp/rebuild-prce"
 }
 fi
 
@@ -73,8 +73,7 @@ done
 echo "Building ${PROJECT_NAME}, ..."
 
 #
-#SRC_FILE=${SHELLDIR}/faiss-1.7.4.tar.xz
-SRC_FILE=${SHELLDIR}/faiss-1.12.0.tar.gz
+SRC_FILE=${SHELLDIR}/pcre-8.45.tar.xz
 #
 SRC_PATH=${C2X2K_BUILD_PATH}/${PROJECT_NAME}/
 
@@ -122,16 +121,16 @@ ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
     -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY \
-    -DCMAKE_C_FLAGS="-fPIC -D_GLIBCXX_USE_C99_MATH" \
-    -DCMAKE_CXX_FLAGS="-fPIC -D_GLIBCXX_USE_C99_MATH" \
-    -DFAISS_ENABLE_GPU=OFF \
-    -DFAISS_GPU_STATIC=OFF \
-    -DFAISS_ENABLE_MKL=OFF \
-    -DFAISS_ENABLE_PYTHON=OFF \
-    -DFAISS_ENABLE_C_API=ON \
-    -DFAISS_ENABLE_EXTRAS=ON \
-    -DFAISS_USE_LTO=OFF \
-    -DBUILD_TESTING=OFF \
+    -DCMAKE_C_FLAGS="-fPIC" \
+    -DCMAKE_CXX_FLAGS="-fPIC" \
+    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_STATIC_LIBS=ON \
+    -DPCRE_BUILD_PCRE8=ON \
+    -DPCRE_BUILD_PCRE16=ON \
+    -DPCRE_BUILD_PCRE32=ON \
+    -DPCRE_BUILD_PCRECPP=ON \
+    -DPCRE_BUILD_TESTS=OFF \
+    -DPCRE_BUILD_PCREGREP=ON \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
