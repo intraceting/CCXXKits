@@ -98,8 +98,11 @@ CROSS_BUILD_PATH=$(realpath "${C2X2K_BUILD_PATH}/../${C2X2K_NATIVE_RELEASE_NAME}
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #1: 如果目标平台不是本地, 则需要优先編译本地平台工具(icucross.mk), 因为在交叉編译时需要本地平台工具(icucross.mk)生成目标平台文件.
-if [ "${C2X2K_NATIVE_MACHINE}" != "${C2X2K_TARGET_MACHINE}" ] && [ "${C2X2K_NATIVE_GLIBC_MAX_VERSION}" != ${C2X2K_TARGET_GLIBC_MAX_VERSION} ] && [ ! -f "${CROSS_BUILD_PATH}/config/icucross.mk" ];then
-    exit_if_error 1 "目标平台不是本地, 则需要优先編译本地平台工具(icucross.mk), 因为在交叉編译时需要本地平台工具(icucross.mk)生成目标平台文件." 1
+if [ "${C2X2K_NATIVE_PLATFORM}" != "${C2X2K_TARGET_PLATFORM}" ] && \
+    [ "${C2X2K_NATIVE_COMPILER_VERSION}" != "${C2X2K_TARGET_COMPILER_VERSION}" ] && \
+    [ "${C2X2K_NATIVE_GLIBC_MAX_VERSION}" != ${C2X2K_TARGET_GLIBC_MAX_VERSION} ] && \
+    [ ! -f "${CROSS_BUILD_PATH}/config/icucross.mk" ];then
+exit_if_error 1 "目标平台不是本地, 则需要优先編译本地平台工具(icucross.mk), 因为在交叉編译时需要本地平台工具(icucross.mk)生成目标平台文件." 1
 fi
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
@@ -109,7 +112,7 @@ if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM}" =
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${CROSS_BUILD_PATH}"
 elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM}" == "armv7" ];then
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${CROSS_BUILD_PATH}"
-elif [ "${C2X2K_NATIVE_GLIBC_MAX_VERSION}" != ${C2X2K_TARGET_GLIBC_MAX_VERSION} ];then
+elif [ "${C2X2K_NATIVE_COMPILER_VERSION}" != "${C2X2K_TARGET_COMPILER_VERSION}" ] || [ "${C2X2K_NATIVE_GLIBC_MAX_VERSION}" != ${C2X2K_TARGET_GLIBC_MAX_VERSION} ];then
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${CROSS_BUILD_PATH}"
 else 
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
