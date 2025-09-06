@@ -190,6 +190,14 @@ do
     esac
 done
 
+
+#必须在项目之外运行此脚本.
+if [ "${SHELLDIR}" == "${PWD}" ];then
+{
+    exit_if_error 1 "This script must be run outside of the project." 1
+}
+fi
+
 #
 NATIVE_OSID=$(GetOSId)
 if [ "${NATIVE_OSID}" == "" ];then
@@ -455,12 +463,12 @@ NATIVE_RELEASE_NAME=${NATIVE_PLATFORM}-gcc${NATIVE_COMPILER_VERSION}-libc${NATIV
 TARGET_RELEASE_NAME=${TARGET_PLATFORM}-gcc${TARGET_COMPILER_VERSION}-libc${TARGET_GLIBC_MAX_VERSION}
 
 #
-BUILD_PATH=${SHELLDIR}/build/${TARGET_RELEASE_NAME}/
-PREFIX_PATH=${SHELLDIR}/sysroot/${TARGET_RELEASE_NAME}/
-PACKAGE_PATH=${SHELLDIR}/package/
+BUILD_PATH=${PWD}/build/${TARGET_RELEASE_NAME}/
+PREFIX_PATH=${PWD}/sysroot/${TARGET_RELEASE_NAME}/
+PACKAGE_PATH=${PWD}/package/
 #
-BUILD_LOG_FILE=${BUILD_PATH}/build.log
-BUILD_CONF_FILE=${BUILD_PATH}/build.conf
+BUILD_LOG_FILE=${PWD}/build/${TARGET_RELEASE_NAME}.log
+BUILD_CONF_FILE=${PWD}/${TARGET_RELEASE_NAME}.conf
 
 #创建不存在的路径。
 mkdir -p ${BUILD_PATH}
@@ -527,4 +535,4 @@ EOF
 exit_if_error $? "生成配置文件失败。" $?
 
 #
-${SHELLDIR}/src/build.sh ${BUILD_CONF_FILE} || exit $?
+#${SHELLDIR}/src/build.sh ${BUILD_CONF_FILE} || exit $?
