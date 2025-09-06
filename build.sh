@@ -387,9 +387,6 @@ echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #
 FIX_PC_VAR_FILE="${C2X2K_PREFIX_PATH}/fix-pkgconfig-variable.sh"
 
-#
-if [ ! -f "${FIX_PC_VAR_FILE}" ];then
-{
 
 #PC文件中路径代号。
 PC_PREFIX_CODE="@C2X2K_PREFIX@"
@@ -422,6 +419,3 @@ EOF
 
 #
 chmod +x ${FIX_PC_VAR_FILE}
-
-}
-fi
