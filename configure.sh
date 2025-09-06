@@ -473,7 +473,6 @@ BUILD_CONF_FILE=${PWD}/${TARGET_RELEASE_NAME}.conf
 #创建不存在的路径。
 mkdir -p ${BUILD_PATH}
 mkdir -p ${PREFIX_PATH}
-mkdir -p ${PACKAGE_PATH}
 
 #
 cat > ${BUILD_CONF_FILE} <<EOF
