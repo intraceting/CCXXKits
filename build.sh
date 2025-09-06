@@ -383,3 +383,45 @@ ${SHELLDIR}/src/PCL/build.sh "${BUILD_FLAGS}" || exit $?
 
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
+
+#
+FIX_PC_VAR_FILE="${C2X2K_PREFIX_PATH}/fix-pkgconfig-variable.sh"
+
+#
+if [ ! -f "${FIX_PC_VAR_FILE}" ];then
+{
+
+#PC文件中路径代号。
+PC_PREFIX_CODE="@C2X2K_PREFIX@"
+
+#所有PC文件全部备份，以便将来目录移动后可以进行本地化修复。
+find ${C2X2K_PREFIX_PATH} -type f -name "*.pc" -exec cp -f {} {}.c2x2k \;
+
+#替换PC文件中的路径为特定关键字，以便于目录移动后重新定位路径。
+find ${C2X2K_PREFIX_PATH} -type f -name "*.pc.c2x2k" -exec sed -i "s#${C2X2K_PREFIX_PATH%/}#${PC_PREFIX_CODE%/}#g" {} \;
+
+#
+cat > ${FIX_PC_VAR_FILE} <<EOF
+#!/bin/bash
+#
+# This file is part of CCXXKits.
+#  
+# Copyright (c) 2025 The CCXXKits project authors. All Rights Reserved.
+# 
+# Warning: Auto-generated, do not modify.
+##
+#
+SHELLDIR=\$(cd \`dirname "\$0"\`; pwd)
+
+#Restore PC files.
+find \${SHELLDIR} -type f -name "*.pc.c2x2k" -exec bash -c 'cp -f "\$0" "\${0%.c2x2k}"' {} \;
+
+#Repair the file paths in the PC files.
+find \${SHELLDIR} -type f -name "*.pc" -exec sed -i "s#${PC_PREFIX_CODE}#\${SHELLDIR%/}#g" {} \;
+EOF
+
+#
+chmod +x ${FIX_PC_VAR_FILE}
+
+}
+fi

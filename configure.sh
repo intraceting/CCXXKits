@@ -535,4 +535,3 @@ EOF
 exit_if_error $? "生成配置文件失败。" $?
 
 #
-#${SHELLDIR}/src/build.sh ${BUILD_CONF_FILE} || exit $?
