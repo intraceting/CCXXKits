@@ -26,11 +26,11 @@ if [ "${TARGET_PLATFORM}" == "x86_64" ];then
 {
     TARGET_ARCH="amd64"
 }
-elif [ "${TARGET_PLATFORM}" == "aarch64" ] || [ "${TARGET_PLATFORM}" == "armv8l" ];then
+elif [ "${TARGET_PLATFORM}" == "aarch64" ] || [ "${TARGET_PLATFORM:0:5}" == "armv8" ];then
 {
     TARGET_ARCH="arm64"
 }
-elif [ "${TARGET_PLATFORM}" == "arm" ] || [ "${TARGET_PLATFORM}" == "armv7l" ] || [ "${TARGET_PLATFORM}" == "armv7a" ];then
+elif [ "${TARGET_PLATFORM}" == "arm" ] || [ "${TARGET_PLATFORM:0:5}" == "armv7" ];then
 {
     TARGET_ARCH="arm"
 }

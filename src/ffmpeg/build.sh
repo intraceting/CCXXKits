@@ -92,9 +92,9 @@ cd ${SRC_PATH}
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM}" == "armv8" ];then
+if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv8" ];then
     MAKE_MORE_CONF="--arch=aarch64"
-elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM}" == "armv7" ];then
+elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv7" ];then
     MAKE_MORE_CONF="--arch=armv7"
 else
     MAKE_MORE_CONF="--arch=x86_64"
