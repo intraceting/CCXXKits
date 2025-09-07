@@ -94,7 +94,9 @@ cd ${SRC_PATH}
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #1: 如果目标平台不是本地, 则需要优先編译本地平台工具(file), 因为在交叉編译时需要本地平台工具(file)生成目标平台文件.
-if [ ! -f "${C2X2K_PREFIX_PATH}/../${C2X2K_NATIVE_RELEASE_NAME}/bin/file" ] && [ "${C2X2K_NATIVE_PLATFORM}" != "${C2X2K_TARGET_PLATFORM}" ] && [ "${C2X2K_NATIVE_GLIBC_MAX_VERSION}" != "${C2X2K_TARGET_GLIBC_MAX_VERSION}" ];then
+if [ ! -f "${C2X2K_PREFIX_PATH}/../${C2X2K_NATIVE_RELEASE_NAME}/bin/file" ] && \
+    [ "${C2X2K_NATIVE_PLATFORM}" != "${C2X2K_TARGET_PLATFORM}" ] && \
+    [ "${C2X2K_NATIVE_GLIBC_MAX_VERSION}" != "${C2X2K_TARGET_GLIBC_MAX_VERSION}" ];then
     exit_if_error 1 "目标平台不是本地, 则需要优先編译本地平台工具(file), 因为在交叉編译时需要本地平台工具(file)生成目标平台文件." 1
 fi
 
