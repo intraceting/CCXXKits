@@ -98,7 +98,7 @@ echo "##########################################################################
 chmod +0500 ./bootstrap.sh
 
 #
-./bootstrap.sh --without-libraries=python  >>${C2X2K_BUILD_LOG_FILE} 2>&1
+./bootstrap.sh -prefix=${C2X2K_PREFIX_PATH} --without-libraries=python >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
@@ -110,13 +110,13 @@ echo "using gcc : ${C2X2K_TARGET_COMPILER_VERSION} : ${C2X2K_TARGET_COMPILER_CXX
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #编译。
-./b2 toolset=gcc cxxflags="-Wno-narrowing"  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+./b2 toolset=gcc cxxflags="-Wno-narrowing -D_GLIBCXX_USE_C99_MATH"  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #安装。
-./b2 --prefix=${C2X2K_PREFIX_PATH}/ toolset=gcc install  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+./b2 toolset=gcc install  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
