@@ -104,6 +104,13 @@ GetCompilerSysroot()
 }
 
 #
+GetLibcVersion()
+#$1 BIN
+{
+    ${SHELLDIR}/tools/get-compiler-glibc-version.sh "$1" "$2"
+}
+
+#
 NATIVE_COMPILER_PREFIX=/usr/bin/
 NATIVE_COMPILER_C=
 NATIVE_COMPILER_CXX=
@@ -422,29 +429,10 @@ NATIVE_COMPILER_VERSION=$(GetCompilerVersion ${NATIVE_COMPILER_C})
 TARGET_COMPILER_VERSION=$(GetCompilerVersion ${TARGET_COMPILER_C})
 
 #提取本机平台的glibc最大版本。
-NATIVE_GLIBC_MAX_VERSION=$(ldd --version |head -n 1 |rev |cut -d ' ' -f 1 |rev)
+NATIVE_GLIBC_MAX_VERSION=$(GetLibcVersion ${NATIVE_COMPILER_C} ${NATIVE_COMPILER_C})
 
 #提取目标平台的glibc最大版本。
-if [ -L ${TARGET_COMPILER_SYSROOT}/lib${TARGET_BITWIDE}/libc.so.6 ];then
-    TARGET_GLIBC_MAX_VERSION=$(basename $(readlink ${TARGET_COMPILER_SYSROOT}/lib${TARGET_BITWIDE}/libc.so.6) |grep -o 'libc-[0-9]\+\.[0-9]\+' | cut -d '-' -f2)
-elif [ -L ${TARGET_COMPILER_SYSROOT}/lib/libc.so.6 ];then
-    TARGET_GLIBC_MAX_VERSION=$(basename $(readlink ${TARGET_COMPILER_SYSROOT}/lib/libc.so.6) |grep -o 'libc-[0-9]\+\.[0-9]\+' | cut -d '-' -f2)
-elif [ "${NATIVE_PLATFORM}" == "${TARGET_PLATFORM}" ];then
-{
-    if [ -L /usr/lib${TARGET_BITWIDE}/libc.so.6 ];then
-        TARGET_GLIBC_MAX_VERSION=$(basename $(readlink /usr/lib${TARGET_BITWIDE}/libc.so.6) |grep -o 'libc-[0-9]\+\.[0-9]\+' | cut -d '-' -f2)
-    elif [ -L /usr/lib/${TARGET_PLATFORM}-linux-gnu/libc.so.6 ];then
-        TARGET_GLIBC_MAX_VERSION=$(basename $(readlink /usr/lib/${TARGET_PLATFORM}-linux-gnu/libc.so.6) |grep -o 'libc-[0-9]\+\.[0-9]\+' | cut -d '-' -f2)
-    elif  [ -L /usr/lib/libc.so.6 ];then
-        TARGET_GLIBC_MAX_VERSION=$(basename $(readlink /usr/lib/libc.so.6) |grep -o 'libc-[0-9]\+\.[0-9]\+' | cut -d '-' -f2)
-    else 
-        TARGET_GLIBC_MAX_VERSION=$(ldd --version |head -n 1 |rev |cut -d ' ' -f 1 |rev)
-    fi
-}
-else
-    TARGET_GLIBC_MAX_VERSION="0.0"
-fi
-
+TARGET_GLIBC_MAX_VERSION=$(GetLibcVersion ${NATIVE_COMPILER_C} ${TARGET_COMPILER_C})
 
 #
 if [ "${NATIVE_GLIBC_MAX_VERSION}" == "" ];then
