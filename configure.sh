@@ -8,6 +8,46 @@
 #
 SHELLDIR=$(cd `dirname "$0"`; pwd)
 
+
+#
+SHELLKITS_HOME_CHECK_LISTS[0]="${SHELLKITS_HOME}"
+SHELLKITS_HOME_CHECK_LISTS[1]="${SHELLDIR}/../SHellKits"
+SHELLKITS_HOME_CHECK_LISTS[2]="${SHELLDIR}/../../SHellKits"
+SHELLKITS_HOME_CHECK_LISTS[3]="${SHELLDIR}/../../../SHellKits"
+SHELLKITS_HOME_CHECK_LISTS[4]="${SHELLDIR}/../../../../SHellKits"
+SHELLKITS_HOME_CHECK_LISTS[5]="${SHELLDIR}/../../../../../SHellKits"
+
+#clear.
+SHELLKITS_HOME=""
+
+#
+for CHECK_ONE in "${SHELLKITS_HOME_CHECK_LISTS[@]}"; do
+{
+    if [ "${CHECK_ONE}" != "" ];then
+        CHECK_ONE=$(realpath -s "${CHECK_ONE}")
+    fi
+
+    if [ -d "${CHECK_ONE}" ];then
+    {
+        SHELLKITS_HOME="${CHECK_ONE}"
+        break
+    }
+    fi
+}
+done
+
+#
+if [ "${SHELLKITS_HOME}" == "" ] || [ ! -d "${SHELLKITS_HOME}" ];then
+{
+    echo "The environment variable SHELLKITS_HOME points to an invalid or non-existent path."
+    echo "The required toolset can be downloaded from 'https://github.com/intraceting/SHellKits.git'."
+    exit 1
+}
+fi 
+
+#导出SHELLKITS_HOME变量给其它子工具集使用。
+export SHELLKITS_HOME
+
 #
 exit_if_error()
 #errno
@@ -33,13 +73,13 @@ exit_if_error()
 #
 GetOSId()
 {
-    ${SHELLDIR}/tools/get-os-id.sh
+    ${SHELLKITS_HOME}/tools/get-os-id.sh
 }
 
 #
 GetKitName()
 {
-	${SHELLDIR}/tools/get-kit-name.sh
+	${SHELLKITS_HOME}/tools/get-kit-name.sh
 }
 
 #
@@ -48,14 +88,14 @@ CheckSTD()
 # $2 COMPILER
 # $3 STD
 {
-    ${SHELLDIR}/tools/check-$1-std.sh "$2" "$3"
+    ${SHELLKITS_HOME}/tools/check-$1-std.sh "$2" "$3"
 }
 
 #
 GetCompilerArch()
 #$1 BIN
 {
-    ${SHELLDIR}/tools/get-compiler-arch.sh "$1" 
+    ${SHELLKITS_HOME}/tools/get-compiler-arch.sh "$1" 
 }
 
 
@@ -71,14 +111,14 @@ GetCompilerBitWide()
 GetCompilerMachine()
 #$1 BIN
 {
-    ${SHELLDIR}/tools/get-compiler-machine.sh "$1" 
+    ${SHELLKITS_HOME}/tools/get-compiler-machine.sh "$1" 
 }
 
 #
 GetCompilerPlatform()
 #$1 BIN
 {
-    ${SHELLDIR}/tools/get-compiler-platform.sh "$1" 
+    ${SHELLKITS_HOME}/tools/get-compiler-platform.sh "$1" 
 }
 
 #
@@ -86,28 +126,28 @@ GetCompilerProgName()
 #$1 BIN
 #$2 NAME
 {
-    ${SHELLDIR}/tools/get-compiler-prog-name.sh "$1" "$2"
+    ${SHELLKITS_HOME}/tools/get-compiler-prog-name.sh "$1" "$2"
 }
 
 #
 GetCompilerVersion()
 #$1 BIN
 {
-    ${SHELLDIR}/tools/get-compiler-version.sh "$1"
+    ${SHELLKITS_HOME}/tools/get-compiler-version.sh "$1"
 }
 
 #
 GetCompilerSysroot()
 #$1 BIN
 {
-    ${SHELLDIR}/tools/get-compiler-sysroot.sh "$1"
+    ${SHELLKITS_HOME}/tools/get-compiler-sysroot.sh "$1"
 }
 
 #
 GetLibcVersion()
 #$1 BIN
 {
-    ${SHELLDIR}/tools/get-compiler-glibc-version.sh "$1" "$2"
+    ${SHELLKITS_HOME}/tools/get-compiler-glibc-version.sh "$1" "$2"
 }
 
 #

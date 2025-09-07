@@ -34,7 +34,7 @@ check_keyword()
 # $1 keywords
 # $2 word
 {
-    ${SHELLDIR}/../../tools/check-keyword.sh "$1" "$2"
+    ${SHELLKITS_HOME}/tools/check-keyword.sh "$1" "$2"
 }
 
 #Build flags.
