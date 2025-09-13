@@ -178,14 +178,14 @@ echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 #
-${SHELLDIR}/src/jsoncpp/build.sh "${BUILD_FLAGS}" || exit $?
+${SHELLDIR}/src/util-linux/build.sh "${BUILD_FLAGS}" || exit $?
 
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
 
-#
-${SHELLDIR}/src/libuuid/build.sh "${BUILD_FLAGS}" || exit $?
 
+#
+${SHELLDIR}/src/jsoncpp/build.sh "${BUILD_FLAGS}" || exit $?
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
 
