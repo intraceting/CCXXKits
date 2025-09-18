@@ -71,6 +71,7 @@ exit_if_error()
 
 #Source environment variables.
 source ${1}
+exit_if_error $? "No found '${1}'." $?
 
 #Build flags.
 BUILD_FLAGS=${2}
