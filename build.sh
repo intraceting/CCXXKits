@@ -427,23 +427,10 @@ echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 #
-${SHELLDIR}/src/sqlite/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
 ${SHELLDIR}/src/unixODBC/build.sh "${BUILD_FLAGS}" || exit $?
 
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/sqliteodbc/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
 
 #
 FIX_PC_VAR_FILE="${C2X2K_PREFIX_PATH}/fix-pkgconfig-variable.sh"
