@@ -102,7 +102,7 @@ exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv8" ];then
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
 elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv7" ];then
-    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --disable-year2038"
 else
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
 fi
