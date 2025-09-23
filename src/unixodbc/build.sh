@@ -37,28 +37,27 @@ check_keyword()
     ${SHELLKITS_HOME}/tools/check-keyword.sh "$1" "$2"
 }
 
-
 #Build flags.
 BUILD_FLAGS=${1}
+
 
 #
 PROJECT_NAME=$(basename ${SHELLDIR})
 PROJECT_NAME=${PROJECT_NAME^^}
 
 #
-if [ $(check_keyword ${BUILD_FLAGS} "rebuild-boost") -eq 0 ];then
+if [ $(check_keyword ${BUILD_FLAGS} "rebuild-unixodbc") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libboost_system.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libboost_system.so"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libodbc.a"
+CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libodbc.so"
+CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libodbc.a"
+CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libodbc.so"
 }
 else
 {
-CHECK_LISTS[0]="/tmp/rebuild-boost"
+CHECK_LISTS[0]="/tmp/rebuild-unixodbc"
 }
 fi
-
 
 #
 for CHECK_ONE in "${CHECK_LISTS[@]}"; do
@@ -70,12 +69,11 @@ for CHECK_ONE in "${CHECK_LISTS[@]}"; do
 }
 done
 
-
 #
 echo "Building ${PROJECT_NAME}, ..."
 
 #
-SRC_FILE=${SHELLDIR}/boost-1.82.0.tar.xz
+SRC_FILE=${SHELLDIR}/unixODBC-2.3.12.tar.gz
 #
 SRC_PATH=${C2X2K_BUILD_PATH}/${PROJECT_NAME}/
 
@@ -84,41 +82,54 @@ if [ -d "${SRC_PATH}" ];then
 rm -rf "${SRC_PATH}"
 fi
 
-#
+#创建不存的路径。
 mkdir -p "${SRC_PATH}"
 
 #
 tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG_FILE} 2>&1
 
-
 #Switch to the source directory.
 cd ${SRC_PATH}
 
-echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
+#
+if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv8" ];then
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
+elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv7" ];then
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
+else
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
+fi
+
+
 
 #
-chmod +0500 ./bootstrap.sh
-
-#
-./bootstrap.sh -prefix=${C2X2K_PREFIX_PATH} --without-libraries=python >>${C2X2K_BUILD_LOG_FILE} 2>&1
+./configure \
+    ${CONF_PARAMS} \
+    --prefix=${C2X2K_PREFIX_PATH} \
+    --enable-threads \
+    --enable-drivers \
+    --enable-driver-config \
+    --enable-iconv \
+    --enable-utf8ini \
+    CC=${C2X2K_TARGET_COMPILER_C} \
+    CXX=${C2X2K_TARGET_COMPILER_CXX} \
+    YACC=${C2X2K_NATIVE_YACC_BIN} \
+    CFLAGS="-fPIC" \
+    CXXFLAGS="-fPIC" \
+    >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
-echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
-
-#
-export BOOST_BUILD_PATH=${SRC_PATH}
-echo "using gcc : ${C2X2K_TARGET_COMPILER_VERSION} : ${C2X2K_TARGET_COMPILER_CXX} ;" > ${BOOST_BUILD_PATH}/user-config.jam
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #编译。
-./b2 toolset=gcc cxxflags="-Wno-narrowing -D_GLIBCXX_USE_C99_MATH"  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+make -j${C2X2K_BUILD_NPROC}  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #安装。
-./b2 toolset=gcc install  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+make install  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}

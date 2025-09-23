@@ -37,28 +37,27 @@ check_keyword()
     ${SHELLKITS_HOME}/tools/check-keyword.sh "$1" "$2"
 }
 
-
 #Build flags.
 BUILD_FLAGS=${1}
+
 
 #
 PROJECT_NAME=$(basename ${SHELLDIR})
 PROJECT_NAME=${PROJECT_NAME^^}
 
 #
-if [ $(check_keyword ${BUILD_FLAGS} "rebuild-boost") -eq 0 ];then
+if [ $(check_keyword ${BUILD_FLAGS} "rebuild-json-c") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libboost_system.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libboost_system.so"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libjson-c.a"
+CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libjson-c.so"
+CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libjson-c.a"
+CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libjson-c.so"
 }
 else
 {
-CHECK_LISTS[0]="/tmp/rebuild-boost"
+CHECK_LISTS[0]="/tmp/rebuild-json-c"
 }
 fi
-
 
 #
 for CHECK_ONE in "${CHECK_LISTS[@]}"; do
@@ -70,12 +69,11 @@ for CHECK_ONE in "${CHECK_LISTS[@]}"; do
 }
 done
 
-
 #
 echo "Building ${PROJECT_NAME}, ..."
 
 #
-SRC_FILE=${SHELLDIR}/boost-1.82.0.tar.xz
+SRC_FILE=${SHELLDIR}/json-c-json-c-0.18-20240915.tar.gz
 #
 SRC_PATH=${C2X2K_BUILD_PATH}/${PROJECT_NAME}/
 
@@ -84,41 +82,61 @@ if [ -d "${SRC_PATH}" ];then
 rm -rf "${SRC_PATH}"
 fi
 
-#
+#创建不存的路径。
 mkdir -p "${SRC_PATH}"
 
 #
 tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG_FILE} 2>&1
 
+#
+BUILD_PATH_TMP=${SRC_PATH}/build.tmp/
 
-#Switch to the source directory.
-cd ${SRC_PATH}
+#创建不存的路径。
+mkdir -p "${BUILD_PATH_TMP}"
+
+#Switch to the temporary directory.
+cd ${BUILD_PATH_TMP}
+
+#指定交叉编译环境的目录
+#set(CMAKE_FIND_ROOT_PATH ${C2X2K_TARGET_COMPILER_SYSROOT})
+#从来不在指定目录(交叉编译)下查找工具程序。(编译时利用的是宿主的工具)
+#set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+#只在指定目录(交叉编译)下查找库文件
+#set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+ #只在指定目录(交叉编译)下查找头文件
+#set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+#只在指定的目录(交叉编译)下查找依赖包
+#set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #
-chmod +0500 ./bootstrap.sh
-
-#
-./bootstrap.sh -prefix=${C2X2K_PREFIX_PATH} --without-libraries=python >>${C2X2K_BUILD_LOG_FILE} 2>&1
+${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
+    -DCMAKE_PREFIX_PATH=${C2X2K_PREFIX_PATH}/ \
+    -DCMAKE_INSTALL_PREFIX=${C2X2K_PREFIX_PATH}/ \
+    -DCMAKE_C_COMPILER=${C2X2K_TARGET_COMPILER_C} \
+    -DCMAKE_CXX_COMPILER=${C2X2K_TARGET_COMPILER_CXX} \
+    -DCMAKE_FIND_ROOT_PATH=${C2X2K_PREFIX_PATH}/ \
+    -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
+    -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
+    -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+    -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY \
+    -DCMAKE_C_FLAGS="-fPIC" \
+    -DCMAKE_CXX_FLAGS="-fPIC" \
+    >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
-echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
-
-#
-export BOOST_BUILD_PATH=${SRC_PATH}
-echo "using gcc : ${C2X2K_TARGET_COMPILER_VERSION} : ${C2X2K_TARGET_COMPILER_CXX} ;" > ${BOOST_BUILD_PATH}/user-config.jam
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #编译。
-./b2 toolset=gcc cxxflags="-Wno-narrowing -D_GLIBCXX_USE_C99_MATH"  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+make -j${C2X2K_BUILD_NPROC}  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #安装。
-./b2 toolset=gcc install  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+make install  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}

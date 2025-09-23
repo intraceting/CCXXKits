@@ -277,6 +277,18 @@ ${SHELLDIR}/src/pcre2/build.sh "${BUILD_FLAGS}" || exit $?
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
 
 
+#
+${SHELLDIR}/src/json-c/build.sh "${BUILD_FLAGS}" || exit $?
+
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
+
+
+#
+${SHELLDIR}/src/unixodbc/build.sh "${BUILD_FLAGS}" || exit $?
+
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
 
 #
 ${SHELLDIR}/src/ffmpeg/build.sh "${BUILD_FLAGS}" || exit $?
