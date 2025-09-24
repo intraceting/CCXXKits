@@ -37,6 +37,15 @@ check_keyword()
     ${SHELLKITS_HOME}/tools/check-keyword.sh "$1" "$2"
 }
 
+#
+CheckSTD()
+# $1 LANG
+# $2 COMPILER
+# $3 STD
+{
+    ${SHELLKITS_HOME}/tools/check-$1-std.sh "$2" "$3"
+}
+
 #Build flags.
 BUILD_FLAGS=${1}
 
@@ -70,6 +79,10 @@ for CHECK_ONE in "${CHECK_LISTS[@]}"; do
 done
 
 #
+CheckSTD cxx "${C2X2K_TARGET_COMPILER_CXX}" "c++2a"
+STD_CXX2A=$?
+
+#
 echo "Building ${PROJECT_NAME}, ..."
 
 #
@@ -93,48 +106,48 @@ cd ${SRC_PATH}
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#创建个性化配置文件
-cat > config.private <<EOF
-PREFIX = ${C2X2K_PREFIX_PATH}/
-LIBDIR = \$(PREFIX)/lib
-#-DNO_STD_LIB 用于c++20以下。
-COMPILE_OPTS = \$(INCLUDES) -I. -fPIC -O3 -DSOCKLEN_T=socklen_t -D_LARGEFILE_SOURCE=1 -D_FILE_OFFSET_BITS=64 -DNO_STD_LIB -Wno-deprecated -I${C2X2K_PREFIX_PATH}/include/
-C = c
-C_COMPILER = ${C2X2K_TARGET_COMPILER_C}
-C_FLAGS = -std=c11 \$(COMPILE_OPTS) \$(CPPFLAGS) \$(CFLAGS) 
-CPP = cpp
-CPLUSPLUS_COMPILER = ${C2X2K_TARGET_COMPILER_CXX}
-CPLUSPLUS_FLAGS = -std=c++11 \$(COMPILE_OPTS) -Wall -DBSD=1 \$(CPPFLAGS) \$(CXXFLAGS)
-OBJ = o
-LINK = ${C2X2K_TARGET_COMPILER_CXX} -o
-LINK_OPTS =	-L. \$(LDFLAGS) -L${C2X2K_PREFIX_PATH}/lib/
-CONSOLE_LINK_OPTS =	\$(LINK_OPTS)
-LIBRARY_LINK = ${C2X2K_TARGET_COMPILER_AR} cr 
-LIBRARY_LINK_OPTS =	
-LIB_SUFFIX = a
-LIBS_FOR_CONSOLE_APPLICATION = -lssl -lcrypto
-LIBS_FOR_GUI_APPLICATION =
-EXE =
-EOF
-
 #给配置工具增加执行权限。
 chmod +0500 genMakefiles
    
 #执行配置。
-./genMakefiles private >>${C2X2K_BUILD_LOG_FILE} 2>&1
+./genMakefiles linux-with-shared-libraries >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
+
+#启用-DNO_STD_LIB，强制用于c++20以下特性编译，将来需要再修改。
+if [ ${STD_CXX2A} -ne 0 ];then
+COMPILE_OPTS="-fPIC -DNO_STD_LIB"
+else
+COMPILE_OPTS="-fPIC -DNO_STD_LIB"
+fi
 
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
+
 #编译。
-make -j${C2X2K_BUILD_NPROC}  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+make -j${C2X2K_BUILD_NPROC} \
+    PREFIX=${C2X2K_PREFIX_PATH} \
+    CC=${C2X2K_TARGET_COMPILER_C} \
+    CXX=${C2X2K_TARGET_COMPILER_CXX} \
+    AR=${C2X2K_TARGET_COMPILER_AR} \
+    CFLAGS="${COMPILE_OPTS} -I${C2X2K_PREFIX_PATH}/include" \
+    CXXFLAGS="${COMPILE_OPTS} -I${C2X2K_PREFIX_PATH}/include" \
+    LDFLAGS="-L${C2X2K_PREFIX_PATH}/lib -Wl,-rpath-link=${C2X2K_PREFIX_PATH}/lib" \
+    >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #安装。
-make install  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+make install \
+    PREFIX=${C2X2K_PREFIX_PATH} \
+    CC=${C2X2K_TARGET_COMPILER_C} \
+    CXX=${C2X2K_TARGET_COMPILER_CXX} \
+    AR=${C2X2K_TARGET_COMPILER_AR} \
+    CFLAGS="${COMPILE_OPTS} -I${C2X2K_PREFIX_PATH}/include" \
+    CXXFLAGS="${COMPILE_OPTS} -I${C2X2K_PREFIX_PATH}/include" \
+    LDFLAGS="-L${C2X2K_PREFIX_PATH}/lib -Wl,-rpath-link=${C2X2K_PREFIX_PATH}/lib" \
+    >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
