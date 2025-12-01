@@ -118,6 +118,9 @@ else
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
 fi
 
+#    CFLAGS="-fPIC -D_GLIBCXX_USE_C99_MATH" \
+#    CXXFLAGS="-fPIC -D_GLIBCXX_USE_C99_MATH" \
+
 #
 ./icu4c/source/configure \
     ${CONF_PARAMS} \
@@ -125,8 +128,8 @@ fi
     --enable-icu-config \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
-    CFLAGS="-fPIC -D_GLIBCXX_USE_C99_MATH" \
-    CXXFLAGS="-fPIC -D_GLIBCXX_USE_C99_MATH" \
+    CFLAGS="-fPIC" \
+    CXXFLAGS="-fPIC" \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 

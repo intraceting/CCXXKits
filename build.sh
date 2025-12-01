@@ -8,6 +8,7 @@
 #
 SHELLDIR=$(cd `dirname "$0"`; pwd)
 
+
 #
 SHELLKITS_HOME_CHECK_LISTS[0]="${SHELLKITS_HOME}"
 SHELLKITS_HOME_CHECK_LISTS[1]="${SHELLDIR}/../SHellKits"
@@ -461,6 +462,11 @@ ${SHELLDIR}/src/zlmediakit/build.sh "${BUILD_FLAGS}" || exit $?
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
 
+#
+${SHELLDIR}/src/qt5/build.sh "${BUILD_FLAGS}" || exit $?
+
+
+echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
 
 
 #

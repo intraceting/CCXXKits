@@ -123,6 +123,7 @@ ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
     -DCMAKE_FIND_ROOT_PATH_MODE_PACKAGE=ONLY \
     -DCMAKE_C_FLAGS="-fPIC" \
     -DCMAKE_CXX_FLAGS="-fPIC" \
+    -DCMAKE_BUILD_TYPE="Release" \
     -Dsctp_werror=0 \
     -Dsctp_build_shared_lib=1 \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1

@@ -111,8 +111,10 @@ echo "using gcc : ${C2X2K_TARGET_COMPILER_VERSION} : ${C2X2K_TARGET_COMPILER_CXX
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
+#./b2 toolset=gcc cxxflags="-Wno-narrowing -D_GLIBCXX_USE_C99_MATH"  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+
 #编译。
-./b2 toolset=gcc cxxflags="-Wno-narrowing -D_GLIBCXX_USE_C99_MATH"  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+./b2 toolset=gcc cxxflags="-Wno-narrowing"  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
