@@ -82,7 +82,7 @@ if [ -d "${SRC_PATH}" ];then
 rm -rf "${SRC_PATH}"
 fi
 
-#创建不存的路径。
+#创建不存的路径.
 mkdir -p "${SRC_PATH}"
 
 #
@@ -91,7 +91,7 @@ tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG
 #
 BUILD_PATH_TMP=${SRC_PATH}/build.tmp/
 
-#创建不存的路径。
+#创建不存的路径.
 mkdir -p "${BUILD_PATH_TMP}"
 
 #Switch to the temporary directory.
@@ -99,7 +99,7 @@ cd ${BUILD_PATH_TMP}
 
 #指定交叉编译环境的目录
 #set(CMAKE_FIND_ROOT_PATH ${C2X2K_TARGET_COMPILER_SYSROOT})
-#从来不在指定目录(交叉编译)下查找工具程序。(编译时利用的是宿主的工具)
+#从来不在指定目录(交叉编译)下查找工具程序.(编译时利用的是宿主的工具)
 #set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 #只在指定目录(交叉编译)下查找库文件
 #set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -112,7 +112,7 @@ cd ${BUILD_PATH_TMP}
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #1: 如果目标平台不是本地, 则需要优先編译本地平台工具(protoc), 因为在交叉編译时需要本地平台工具(protoc)生成目标平台文件.
-if [ ! -f "${C2X2K_PREFIX_PATH}/../${C2X2K_NATIVE_RELEASE_NAME}/bin/protoc" ];then
+if [ ! -f "${NATIVE_SYSROOT}/bin/protoc" ];then
     exit_if_error 1 "目标平台不是本地, 则需要优先編译本地平台工具(protoc), 因为在交叉編译时需要本地平台工具(protoc)生成目标平台文件." 1
 fi
 
@@ -120,11 +120,11 @@ echo "##########################################################################
 
 #
 if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv8" ];then
-    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_PREFIX_PATH}/../${C2X2K_NATIVE_RELEASE_NAME}/bin/protoc"
+    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64  -DProtobuf_PROTOC_EXECUTABLE=${NATIVE_SYSROOT}/bin/protoc"
 elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv7" ];then
-    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=armv7  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_PREFIX_PATH}/../${C2X2K_NATIVE_RELEASE_NAME}/bin/protoc"
+    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=armv7  -DProtobuf_PROTOC_EXECUTABLE=${NATIVE_SYSROOT}/bin/protoc"
 else
-    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_PREFIX_PATH}/../${C2X2K_NATIVE_RELEASE_NAME}/bin/protoc"
+    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64  -DProtobuf_PROTOC_EXECUTABLE=${NATIVE_SYSROOT}/bin/protoc"
 fi
 
 # 有些編译器没有ARM平台CRC32内置的算法.
@@ -159,20 +159,20 @@ exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#编译。
+#编译.
 make -j${C2X2K_BUILD_NPROC}  VERBOSE=1  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#安装。
+#安装.
 make install  VERBOSE=1  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 
-#恢复工作目录。
+#恢复工作目录.
 cd ${SHELLDIR}
 
 #

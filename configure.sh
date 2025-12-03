@@ -45,7 +45,7 @@ if [ "${SHELLKITS_HOME}" == "" ] || [ ! -d "${SHELLKITS_HOME}" ];then
 }
 fi 
 
-#导出SHELLKITS_HOME变量给其它子工具集使用。
+#导出SHELLKITS_HOME变量给其它子工具集使用.
 export SHELLKITS_HOME
 
 #
@@ -72,18 +72,19 @@ exit_if_error()
 #
 CompilerSelect()
 {
-    ${SHELLKITS_HOME}/solution/compiler-configure.sh -d SOLUTION_PREFIX=C2X2K -d NATIVE_COMPILER_PREFIX="$1" -d TARGET_COMPILER_PREFIX="$2"
+    ${SHELLKITS_HOME}/tools/print-compiler-conf.sh -d SOLUTION_PREFIX=C2X2K -d NATIVE_COMPILER_PREFIX="$1" -d TARGET_COMPILER_PREFIX="$2"
 }
 
 
 #
 NATIVE_COMPILER_PREFIX=/usr/bin/
-#
 NATIVE_CMAKE_BIN=$(which cmake)
-#
 NATIVE_YACC_BIN=$(which yacc)
+NATIVE_SYSROOT=""
+
 #
 TARGET_COMPILER_PREFIX=/usr/bin/
+
 
 #
 PrintUsage()
@@ -91,16 +92,18 @@ PrintUsage()
 cat << EOF
 usage: [ OPTIONS ]
     -h
-    打印此文档。
+    打印此文档.
 
     -d < name=value >
-     自定义环境变量。
+     自定义环境变量.
 
      NATIVE_COMPILER_PREFIX=${NATIVE_COMPILER_PREFIX}
 
      NATIVE_CMAKE_BIN=${NATIVE_CMAKE_BIN}
 
      NATIVE_YACC_BIN=${NATIVE_YACC_BIN}
+
+     NATIVE_SYSROOT=${NATIVE_SYSROOT}
 
      TARGET_COMPILER_PREFIX=${TARGET_COMPILER_PREFIX}
 EOF
@@ -134,25 +137,25 @@ if [ "${SHELLDIR}" == "${PWD}" ];then
 fi
 
 
-#检查参数。
+#检查参数.
 if [ "${NATIVE_COMPILER_PREFIX}" == "" ];then
 echo "NATIVE_COMPILER_PREFIX=${NATIVE_COMPILER_PREFIX} 无效或不存在."
 exit 22
 fi
 
-#检查参数。
+#检查参数.
 if [ ! -f "${NATIVE_CMAKE_BIN}" ];then
 echo "NATIVE_CMAKE_BIN=${NATIVE_CMAKE_BIN} 无效或不存在."
 exit 22
 fi
 
-#检查参数。
+#检查参数.
 if [ ! -f "${NATIVE_YACC_BIN}" ];then
 echo "NATIVE_CMAKE_BIN=${NATIVE_YACC_BIN} 无效或不存在."
 exit 22
 fi
 
-#检查参数。
+#检查参数.
 if [ "${TARGET_COMPILER_PREFIX}" == "" ];then
 echo "TARGET_COMPILER_PREFIX=${TARGET_COMPILER_PREFIX} 无效或不存在."
 exit 22
@@ -166,23 +169,36 @@ exit_if_error $? "${COMPILER_CONF}" $?
 eval "${COMPILER_CONF}"
 
 #
-NATIVE_RELEASE_NAME=${C2X2K_NATIVE_PLATFORM}-gcc${C2X2K_NATIVE_COMPILER_VERSION}-libc${C2X2K_NATIVE_GLIBC_MAX_VERSION}
-TARGET_RELEASE_NAME=${C2X2K_TARGET_PLATFORM}-gcc${C2X2K_TARGET_COMPILER_VERSION}-libc${C2X2K_TARGET_GLIBC_MAX_VERSION}
+BUILD_PATH=${PWD}/build/
+PREFIX_PATH=${PWD}/sysroot/
 
 #
-BUILD_PATH=${PWD}/build/${TARGET_RELEASE_NAME}/
-PREFIX_PATH=${PWD}/sysroot/${TARGET_RELEASE_NAME}/
-
-#
-BUILD_LOG_FILE=${PWD}/build/${TARGET_RELEASE_NAME}.log
-BUILD_CONF_FILE=${PWD}/${TARGET_RELEASE_NAME}.conf
-
-#创建不存在的路径。
 mkdir -p ${BUILD_PATH}
 mkdir -p ${PREFIX_PATH}
 
 #
-cat > ${BUILD_CONF_FILE} <<EOF
+BUILD_LOG_FILE=${PWD}/build.log
+BUILD_MAKEFILE=${PWD}/makefile
+
+#
+if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" == "${C2X2K_TARGET_COMPILER_PREFIX}" ];then
+NATIVE_SYSROOT=${PREFIX_PATH}
+else
+NATIVE_SYSROOT=$(realpath -s "${NATIVE_SYSROOT}")
+fi
+
+#
+if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ] && [ ! -f ${NATIVE_SYSROOT}/bin/gdb ];then
+    exit_if_error 1 "\$NATIVE_SYSROOT必需指向有效路径." 1
+fi
+
+#
+TAB=$'\t'
+
+#
+cat > ${BUILD_MAKEFILE} <<EOF
+#
+export SHELLKITS_HOME=${SHELLKITS_HOME}
 #
 export C2X2K_NATIVE_COMPILER_PREFIX=${C2X2K_NATIVE_COMPILER_PREFIX}
 export C2X2K_NATIVE_COMPILER_C=${C2X2K_NATIVE_COMPILER_C}
@@ -220,8 +236,7 @@ export C2X2K_TARGET_COMPILER_VERSION=${C2X2K_TARGET_COMPILER_VERSION}
 export C2X2K_NATIVE_GLIBC_MAX_VERSION=${C2X2K_NATIVE_GLIBC_MAX_VERSION}
 export C2X2K_TARGET_GLIBC_MAX_VERSION=${C2X2K_TARGET_GLIBC_MAX_VERSION}
 #
-export C2X2K_NATIVE_RELEASE_NAME=${NATIVE_RELEASE_NAME}
-export C2X2K_TARGET_RELEASE_NAME=${TARGET_RELEASE_NAME}
+export C2X2K_NATIVE_SYSROOT=${NATIVE_SYSROOT}
 #
 export C2X2K_BUILD_PATH=${BUILD_PATH}
 export C2X2K_PREFIX_PATH=${PREFIX_PATH}
@@ -231,11 +246,33 @@ export C2X2K_BUILD_LOG_FILE=${BUILD_LOG_FILE}
 export C2X2K_BUILD_NPROC=6
 
 #
-#限制目标平台.pc文件搜索路径范围。
+#限制目标平台.pc文件搜索路径范围.
 export PKG_CONFIG_LIBDIR=\${C2X2K_PREFIX_PATH}/lib\${C2X2K_TARGET_BITWIDE}/pkgconfig:\${C2X2K_PREFIX_PATH}/lib/pkgconfig:\${C2X2K_PREFIX_PATH}/share/pkgconfig
+
+#
+SRC_DIR=${SHELLDIR}/src/
+
+#
+BUILD_FLAGS ?= 
+
+#
+KITS += libiconv
+KITS += gdb
+
+#
+all: \${KITS}
+
+#
+libiconv:
+${TAB}\${SRC_DIR}/libiconv/build.sh \${BUILD_FLAGS}
+
+#
+gdb:
+${TAB}\${SRC_DIR}/gdb/build.sh \${BUILD_FLAGS}
+
 
 
 EOF
-exit_if_error $? "生成配置文件失败。" $?
+exit_if_error $? "生成配置文件失败." $?
 
 #

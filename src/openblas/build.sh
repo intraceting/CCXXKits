@@ -81,7 +81,7 @@ if [ -d "${SRC_PATH}" ];then
 rm -rf "${SRC_PATH}"
 fi
 
-#创建不存的路径。
+#创建不存的路径.
 mkdir -p "${SRC_PATH}"
 
 #
@@ -101,7 +101,7 @@ fi
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#编译。
+#编译.
 make -j${C2X2K_BUILD_NPROC} shared \
     ${MAKE_MORE_CONF} \
     PREFIX="${C2X2K_PREFIX_PATH}/" \
@@ -115,7 +115,7 @@ exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#安装。
+#安装.
 make install \
     ${MAKE_MORE_CONF} \
     PREFIX="${C2X2K_PREFIX_PATH}/" \
@@ -130,7 +130,7 @@ exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 
-#恢复工作目录。
+#恢复工作目录.
 cd ${SHELLDIR}
 
 #

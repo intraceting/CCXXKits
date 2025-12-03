@@ -95,7 +95,7 @@ if [ -d "${SRC_PATH}" ];then
 rm -rf "${SRC_PATH}"
 fi
 
-#创建不存的路径。
+#创建不存的路径.
 mkdir -p "${SRC_PATH}"
 
 #
@@ -106,14 +106,14 @@ cd ${SRC_PATH}
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#给配置工具增加执行权限。
+#给配置工具增加执行权限.
 chmod +0500 genMakefiles
    
-#执行配置。
+#执行配置.
 ./genMakefiles linux-with-shared-libraries >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
-#启用-DNO_STD_LIB，强制用于c++20以下特性编译，将来需要再修改。
+#启用-DNO_STD_LIB，强制用于c++20以下特性编译，将来需要再修改.
 if [ ${STD_CXX2A} -ne 0 ];then
 COMPILE_OPTS="-fPIC -DNO_STD_LIB"
 else
@@ -124,7 +124,7 @@ fi
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 
-#编译。
+#编译.
 make -j${C2X2K_BUILD_NPROC} \
     PREFIX=${C2X2K_PREFIX_PATH} \
     CC=${C2X2K_TARGET_COMPILER_C} \
@@ -138,7 +138,7 @@ exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#安装。
+#安装.
 make install \
     PREFIX=${C2X2K_PREFIX_PATH} \
     CC=${C2X2K_TARGET_COMPILER_C} \
@@ -153,7 +153,7 @@ exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 
-#恢复工作目录。
+#恢复工作目录.
 cd ${SHELLDIR}
 
 #

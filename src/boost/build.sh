@@ -113,20 +113,20 @@ echo "##########################################################################
 
 #./b2 toolset=gcc cxxflags="-Wno-narrowing -D_GLIBCXX_USE_C99_MATH"  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 
-#编译。
+#编译.
 ./b2 toolset=gcc cxxflags="-Wno-narrowing"  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#安装。
+#安装.
 ./b2 toolset=gcc install  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 
-#恢复工作目录。
+#恢复工作目录.
 cd ${SHELLDIR}
 
 #

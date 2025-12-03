@@ -45,7 +45,7 @@ if [ "${SHELLKITS_HOME}" == "" ] || [ ! -d "${SHELLKITS_HOME}" ];then
 }
 fi 
 
-#导出SHELLKITS_HOME变量给其它子工具集使用。
+#导出SHELLKITS_HOME变量给其它子工具集使用.
 export SHELLKITS_HOME
 
 
@@ -473,13 +473,13 @@ echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 FIX_PC_VAR_FILE="${C2X2K_PREFIX_PATH}/fix-pkgconfig-variable.sh"
 
 
-#PC文件中路径代号。
+#PC文件中路径代号.
 PC_PREFIX_CODE="@C2X2K_PREFIX@"
 
-#所有PC文件全部备份，以便将来目录移动后可以进行本地化修复。
+#所有PC文件全部备份，以便将来目录移动后可以进行本地化修复.
 find ${C2X2K_PREFIX_PATH} -type f -name "*.pc" -exec cp -f {} {}.c2x2k \;
 
-#替换PC文件中的路径为特定关键字，以便于目录移动后重新定位路径。
+#替换PC文件中的路径为特定关键字，以便于目录移动后重新定位路径.
 find ${C2X2K_PREFIX_PATH} -type f -name "*.pc.c2x2k" -exec sed -i "s#${C2X2K_PREFIX_PATH%/}#${PC_PREFIX_CODE%/}#g" {} \;
 
 #

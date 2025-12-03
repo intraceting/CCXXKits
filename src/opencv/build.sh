@@ -100,7 +100,7 @@ exit_if_error $? "Error decompressing ${PROJECT_NAME}." $?
 #
 BUILD_PATH_TMP=${SRC_PATH}/build.tmp/
 
-#创建不存的路径。
+#创建不存的路径.
 mkdir -p "${BUILD_PATH_TMP}"
 
 #Switch to the temporary directory.
@@ -108,7 +108,7 @@ cd ${BUILD_PATH_TMP}
 
 #指定交叉编译环境的目录
 #set(CMAKE_FIND_ROOT_PATH ${C2X2K_TARGET_COMPILER_SYSROOT})
-#从来不在指定目录(交叉编译)下查找工具程序。(编译时利用的是宿主的工具)
+#从来不在指定目录(交叉编译)下查找工具程序.(编译时利用的是宿主的工具)
 #set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
 #只在指定目录(交叉编译)下查找库文件
 #set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
@@ -183,20 +183,20 @@ exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#编译。
+#编译.
 make -j${C2X2K_BUILD_NPROC} VERBOSE=1 >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#安装。
+#安装.
 make install VERBOSE=1  >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 
-#恢复工作目录。
+#恢复工作目录.
 cd ${SHELLDIR}
 
 #
