@@ -120,6 +120,7 @@ chmod 0755 ./ffbuild/*.sh
     --enable-libx265 \
     --enable-libx264 \
     --enable-libfdk-aac \
+    --enable-libopus \
     --enable-libxml2 \
     --enable-openssl \
     --enable-pic \

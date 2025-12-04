@@ -163,11 +163,11 @@ cd ${SRC_PATH}
 
 #
 if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv8" ];then
-    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${NATIVE_SYSROOT}/bin/protoc"
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
 elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv7" ];then
-    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${NATIVE_SYSROOT}/bin/protoc"
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
 else
-    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${NATIVE_SYSROOT}/bin/protoc"
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
 fi
 
 #

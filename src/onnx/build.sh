@@ -112,7 +112,7 @@ cd ${BUILD_PATH_TMP}
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #1: 如果目标平台不是本地, 则需要优先編译本地平台工具(protoc), 因为在交叉編译时需要本地平台工具(protoc)生成目标平台文件.
-if [ ! -f "${NATIVE_SYSROOT}/bin/protoc" ];then
+if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ] && [ ! -f "${C2X2K_NATIVE_SYSROOT}/bin/protoc" ];then
     exit_if_error 1 "目标平台不是本地, 则需要优先編译本地平台工具(protoc), 因为在交叉編译时需要本地平台工具(protoc)生成目标平台文件." 1
 fi
 
@@ -120,11 +120,11 @@ echo "##########################################################################
 
 #
 if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv8" ];then
-    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64  -DProtobuf_PROTOC_EXECUTABLE=${NATIVE_SYSROOT}/bin/protoc"
+    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
 elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv7" ];then
-    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=armv7  -DProtobuf_PROTOC_EXECUTABLE=${NATIVE_SYSROOT}/bin/protoc"
+    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=armv7  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
 else
-    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64  -DProtobuf_PROTOC_EXECUTABLE=${NATIVE_SYSROOT}/bin/protoc"
+    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
 fi
 
 # 有些編译器没有ARM平台CRC32内置的算法.
