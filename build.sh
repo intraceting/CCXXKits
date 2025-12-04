@@ -10,18 +10,18 @@ SHELLDIR=$(cd `dirname "$0"`; pwd)
 
 
 #
-SHELLKITS_HOME_CHECK_LISTS[0]="${SHELLKITS_HOME}"
-SHELLKITS_HOME_CHECK_LISTS[1]="${SHELLDIR}/../SHellKits"
-SHELLKITS_HOME_CHECK_LISTS[2]="${SHELLDIR}/../../SHellKits"
-SHELLKITS_HOME_CHECK_LISTS[3]="${SHELLDIR}/../../../SHellKits"
-SHELLKITS_HOME_CHECK_LISTS[4]="${SHELLDIR}/../../../../SHellKits"
-SHELLKITS_HOME_CHECK_LISTS[5]="${SHELLDIR}/../../../../../SHellKits"
+SHELLKITS_HOME_CHECK_LIST+=("${SHELLKITS_HOME}")
+SHELLKITS_HOME_CHECK_LIST+=("${SHELLDIR}/../SHellKits")
+SHELLKITS_HOME_CHECK_LIST+=("${SHELLDIR}/../../SHellKits")
+SHELLKITS_HOME_CHECK_LIST+=("${SHELLDIR}/../../../SHellKits")
+SHELLKITS_HOME_CHECK_LIST+=("${SHELLDIR}/../../../../SHellKits")
+SHELLKITS_HOME_CHECK_LIST+=("${SHELLDIR}/../../../../../SHellKits")
 
 #clear.
 SHELLKITS_HOME=""
 
 #
-for CHECK_ONE in "${SHELLKITS_HOME_CHECK_LISTS[@]}"; do
+for CHECK_ONE in "${SHELLKITS_HOME_CHECK_LIST[@]}"; do
 {
     if [ "${CHECK_ONE}" != "" ];then
         CHECK_ONE=$(realpath -s "${CHECK_ONE}")
@@ -45,10 +45,6 @@ if [ "${SHELLKITS_HOME}" == "" ] || [ ! -d "${SHELLKITS_HOME}" ];then
 }
 fi 
 
-#导出SHELLKITS_HOME变量给其它子工具集使用.
-export SHELLKITS_HOME
-
-
 #
 exit_if_error()
 #errno
@@ -70,12 +66,69 @@ exit_if_error()
     fi
 }
 
-#Source environment variables.
-source ${1}
-exit_if_error $? "No found '${1}'." $?
+#
+CompilerSelect()
+{
+    ${SHELLKITS_HOME}/tools/print-compiler-conf.sh -d SOLUTION_PREFIX=C2X2K -d NATIVE_COMPILER_PREFIX="$1" -d TARGET_COMPILER_PREFIX="$2"
+}
 
-#Build flags.
-BUILD_FLAGS=${2}
+
+#
+NATIVE_COMPILER_PREFIX=/usr/bin/
+NATIVE_CMAKE_BIN=$(which cmake)
+NATIVE_YACC_BIN=$(which yacc)
+NATIVE_SYSROOT=""
+
+#
+TARGET_COMPILER_PREFIX=/usr/bin/
+
+#
+BUILD_FLAGS=""
+
+#
+PrintUsage()
+{
+cat << EOF
+usage: [ OPTIONS ]
+    -h
+    打印此文档.
+
+    -d < name=value >
+     自定义环境变量.
+
+     NATIVE_COMPILER_PREFIX=${NATIVE_COMPILER_PREFIX}
+
+     NATIVE_CMAKE_BIN=${NATIVE_CMAKE_BIN}
+
+     NATIVE_YACC_BIN=${NATIVE_YACC_BIN}
+
+     NATIVE_SYSROOT=${NATIVE_SYSROOT}
+
+     TARGET_COMPILER_PREFIX=${TARGET_COMPILER_PREFIX}
+
+     BUILD_FLAGS=${BUILD_FLAGS}
+EOF
+}
+
+#
+while getopts "hd:" ARGKEY 
+do
+    case $ARGKEY in
+    h)
+        PrintUsage
+        exit 0
+    ;;
+    d)
+        # 使用正则表达式检查参数是否为 "key=value" 或 "key=" 的格式.
+        if [[ ${OPTARG} =~ ^[a-zA-Z_][a-zA-Z0-9_]*= ]]; then
+            declare "${OPTARG%%=*}"="${OPTARG#*=}"
+        else 
+            echo "'-d ${OPTARG}' will be ignored, the parameter of '- d' only supports the format of 'key=value' or 'key=' ."
+        fi 
+    ;;
+    esac
+done
+
 
 #必须在项目之外运行此脚本.
 if [ "${SHELLDIR}" == "${PWD}" ];then
@@ -84,393 +137,194 @@ if [ "${SHELLDIR}" == "${PWD}" ];then
 }
 fi
 
+
+#检查参数.
+if [ "${NATIVE_COMPILER_PREFIX}" == "" ];then
+echo "NATIVE_COMPILER_PREFIX=${NATIVE_COMPILER_PREFIX} 无效或不存在."
+exit 22
+fi
+
+#检查参数.
+if [ ! -f "${NATIVE_CMAKE_BIN}" ];then
+echo "NATIVE_CMAKE_BIN=${NATIVE_CMAKE_BIN} 无效或不存在."
+exit 22
+fi
+
+#检查参数.
+if [ ! -f "${NATIVE_YACC_BIN}" ];then
+echo "NATIVE_CMAKE_BIN=${NATIVE_YACC_BIN} 无效或不存在."
+exit 22
+fi
+
+#检查参数.
+if [ "${TARGET_COMPILER_PREFIX}" == "" ];then
+echo "TARGET_COMPILER_PREFIX=${TARGET_COMPILER_PREFIX} 无效或不存在."
+exit 22
+fi
+
+#
+COMPILER_CONF=$(CompilerSelect ${NATIVE_COMPILER_PREFIX} ${TARGET_COMPILER_PREFIX})
+exit_if_error $? "${COMPILER_CONF}" $?
+
+#
+eval "${COMPILER_CONF}"
+
+#
+BUILD_PATH=${PWD}/build/
+PREFIX_PATH=${PWD}/sysroot/
+
+#
+mkdir -p ${BUILD_PATH}
+mkdir -p ${PREFIX_PATH}
+
+#
+BUILD_LOG_FILE=${PWD}/build.log
+BUILD_MAKEFILE=${PWD}/makefile
+
+#
+if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" == "${C2X2K_TARGET_COMPILER_PREFIX}" ];then
+NATIVE_SYSROOT=${PREFIX_PATH}
+else
+NATIVE_SYSROOT=$(realpath -s "${NATIVE_SYSROOT}")
+fi
+
+#
+if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ] && [ ! -f ${NATIVE_SYSROOT}/bin/gdb ];then
+    exit_if_error 1 "NATIVE_SYSROOT必需指向有效路径." 1
+fi
+
+#
+export SHELLKITS_HOME=${SHELLKITS_HOME}
+#
+export C2X2K_NATIVE_COMPILER_PREFIX=${C2X2K_NATIVE_COMPILER_PREFIX}
+export C2X2K_NATIVE_COMPILER_C=${C2X2K_NATIVE_COMPILER_C}
+export C2X2K_NATIVE_COMPILER_CXX=${C2X2K_NATIVE_COMPILER_CXX}
+export C2X2K_NATIVE_COMPILER_FORTRAN=${C2X2K_NATIVE_COMPILER_FORTRAN}
+export C2X2K_NATIVE_COMPILER_SYSROOT=${C2X2K_NATIVE_COMPILER_SYSROOT}
+export C2X2K_NATIVE_COMPILER_AR=${C2X2K_NATIVE_COMPILER_AR}
+export C2X2K_NATIVE_COMPILER_LD=${C2X2K_NATIVE_COMPILER_LD}
+export C2X2K_NATIVE_COMPILER_RANLIB=${C2X2K_NATIVE_COMPILER_RANLIB}
+export C2X2K_NATIVE_COMPILER_READELF=${C2X2K_NATIVE_COMPILER_READELF}
+#
+export C2X2K_NATIVE_CMAKE_BIN=${NATIVE_CMAKE_BIN}
+export C2X2K_NATIVE_YACC_BIN=${NATIVE_YACC_BIN}
+#
+export C2X2K_TARGET_COMPILER_PREFIX=${C2X2K_TARGET_COMPILER_PREFIX}
+export C2X2K_TARGET_COMPILER_C=${C2X2K_TARGET_COMPILER_C}
+export C2X2K_TARGET_COMPILER_CXX=${C2X2K_TARGET_COMPILER_CXX}
+export C2X2K_TARGET_COMPILER_FORTRAN=${C2X2K_TARGET_COMPILER_FORTRAN}
+export C2X2K_TARGET_COMPILER_SYSROOT=${C2X2K_TARGET_COMPILER_SYSROOT}
+export C2X2K_TARGET_COMPILER_AR=${C2X2K_TARGET_COMPILER_AR}
+export C2X2K_TARGET_COMPILER_LD=${C2X2K_TARGET_COMPILER_LD}
+export C2X2K_TARGET_COMPILER_RANLIB=${C2X2K_TARGET_COMPILER_RANLIB}
+export C2X2K_TARGET_COMPILER_READELF=${C2X2K_TARGET_COMPILER_READELF}
+#
+export C2X2K_NATIVE_MACHINE=${C2X2K_NATIVE_MACHINE}
+export C2X2K_TARGET_MACHINE=${C2X2K_TARGET_MACHINE}
+export C2X2K_NATIVE_PLATFORM=${C2X2K_NATIVE_PLATFORM}
+export C2X2K_TARGET_PLATFORM=${C2X2K_TARGET_PLATFORM}
+export C2X2K_NATIVE_ARCH=${C2X2K_NATIVE_ARCH}
+export C2X2K_TARGET_ARCH=${C2X2K_TARGET_ARCH}
+export C2X2K_NATIVE_BITWIDE=${C2X2K_NATIVE_BITWIDE}
+export C2X2K_TARGET_BITWIDE=${C2X2K_TARGET_BITWIDE}
+export C2X2K_NATIVE_COMPILER_VERSION=${C2X2K_NATIVE_COMPILER_VERSION}
+export C2X2K_TARGET_COMPILER_VERSION=${C2X2K_TARGET_COMPILER_VERSION}
+export C2X2K_NATIVE_GLIBC_MAX_VERSION=${C2X2K_NATIVE_GLIBC_MAX_VERSION}
+export C2X2K_TARGET_GLIBC_MAX_VERSION=${C2X2K_TARGET_GLIBC_MAX_VERSION}
+#
+export C2X2K_NATIVE_SYSROOT=${NATIVE_SYSROOT}
+#
+export C2X2K_BUILD_PATH=${BUILD_PATH}
+export C2X2K_PREFIX_PATH=${PREFIX_PATH}
+#
+export C2X2K_BUILD_LOG_FILE=${BUILD_LOG_FILE}
+#
+export C2X2K_BUILD_NPROC=6
+
+#
+#限制目标平台.pc文件搜索路径范围.
+export PKG_CONFIG_LIBDIR=${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/pkgconfig:${C2X2K_PREFIX_PATH}/lib/pkgconfig:${C2X2K_PREFIX_PATH}/share/pkgconfig
+
+#
 #Truncate the log file.
 > "${C2X2K_BUILD_LOG_FILE}"
 
+#
+KIT_LIST+=("zlib")
+KIT_LIST+=("lz4")
+KIT_LIST+=("xz")
+KIT_LIST+=("bzip2")
+KIT_LIST+=("zstd")
+KIT_LIST+=("libiconv")
+KIT_LIST+=("gdb")
+KIT_LIST+=("flatbuffers")
+KIT_LIST+=("FILE")
+KIT_LIST+=("openblas")
+KIT_LIST+=("openssl")
+KIT_LIST+=("gss")
+KIT_LIST+=("libsodium")
+KIT_LIST+=("x264")
+KIT_LIST+=("x265")
+KIT_LIST+=("util-linux")
+KIT_LIST+=("jsoncpp")
+KIT_LIST+=("libxml2")
+KIT_LIST+=("eigen")
+KIT_LIST+=("freetype")
+KIT_LIST+=("libicu")
+KIT_LIST+=("libunistring")
+KIT_LIST+=("libidn2")
+KIT_LIST+=("harfbuzz")
+KIT_LIST+=("mp4v2")
+KIT_LIST+=("faac")
+KIT_LIST+=("faad2")
+KIT_LIST+=("fdk-aac")
+KIT_LIST+=("pcre")
+KIT_LIST+=("pcre2")
+KIT_LIST+=("json-c")
+KIT_LIST+=("unixodbc")
+KIT_LIST+=("libsrtp")
+KIT_LIST+=("usrsctp")
+KIT_LIST+=("libopus")
+KIT_LIST+=("ffmpeg")
+KIT_LIST+=("abseil-cpp")
+KIT_LIST+=("protobuf")
+KIT_LIST+=("onnx")
+KIT_LIST+=("opencv")
+KIT_LIST+=("live555")
+KIT_LIST+=("libhiredis")
+KIT_LIST+=("libqrencode")
+KIT_LIST+=("libev")
+KIT_LIST+=("c-ares")
+KIT_LIST+=("nghttp2")
+KIT_LIST+=("libarchive")
+KIT_LIST+=("libssh2")
+KIT_LIST+=("libpsl")
+KIT_LIST+=("curl")
+KIT_LIST+=("fastcgi")
+KIT_LIST+=("faiss")
+KIT_LIST+=("openssh")
+KIT_LIST+=("boost")
+KIT_LIST+=("flann")
+KIT_LIST+=("octomap")
+KIT_LIST+=("PCL")
+KIT_LIST+=("sqlite")
+KIT_LIST+=("zlmediakit")
+KIT_LIST+=("qt5")
 
 #
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
+for KIT_NAME in "${KIT_LIST[@]}"; do
+{
+    echo ">>>>>>>>>>>>>>>>>>>>>>>>>${KIT_NAME}>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 
-#
-${SHELLDIR}/src/libiconv/build.sh "${BUILD_FLAGS}" || exit $?
+    ${SHELLDIR}/src/${KIT_NAME}/build.sh "${BUILD_FLAGS}" || exit $?
 
-
-#
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/gdb/build.sh "${BUILD_FLAGS}" || exit $?
-
-#
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/zlib/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/lz4/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/xz/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/bzip2/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/zstd/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/flatbuffers/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/FILE/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/openblas/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/openssl/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
+    echo ">>>>>>>>>>>>>>>>>>>>>>>>>${KIT_NAME}>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+}
+done
 
 
 #
-${SHELLDIR}/src/x264/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/x265/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/util-linux/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/jsoncpp/build.sh "${BUILD_FLAGS}" || exit $?
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/libxml2/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/eigen/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/freetype/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/libicu/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/libunistring/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/libidn2/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-
-#
-${SHELLDIR}/src/harfbuzz/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/mp4v2/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/faac/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/faad2/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/fdk-aac/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/pcre/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/pcre2/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/json-c/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/unixodbc/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/libsrtp/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/usrsctp/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/ffmpeg/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/abseil-cpp/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/protobuf/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/onnx/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/opencv/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/live555/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/libhiredis/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/libqrencode/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/libev/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/c-ares/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/nghttp2/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/libarchive/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/libssh2/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/libpsl/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/curl/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/fastcgi/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/faiss/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/openssh/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/boost/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/flann/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-${SHELLDIR}/src/octomap/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/PCL/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/sqlite/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/zlmediakit/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-#
-${SHELLDIR}/src/qt5/build.sh "${BUILD_FLAGS}" || exit $?
-
-
-echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>" >> "${C2X2K_BUILD_LOG_FILE}"
-
-
-#
-FIX_PC_VAR_FILE="${C2X2K_PREFIX_PATH}/fix-pkgconfig-variable.sh"
+RELOCATE_SDK_FILE="${C2X2K_PREFIX_PATH}/relocate-sdk.sh"
 
 
 #PC文件中路径代号.
@@ -483,7 +337,7 @@ find ${C2X2K_PREFIX_PATH} -type f -name "*.pc" -exec cp -f {} {}.c2x2k \;
 find ${C2X2K_PREFIX_PATH} -type f -name "*.pc.c2x2k" -exec sed -i "s#${C2X2K_PREFIX_PATH%/}#${PC_PREFIX_CODE%/}#g" {} \;
 
 #
-cat > ${FIX_PC_VAR_FILE} <<EOF
+cat > ${RELOCATE_SDK_FILE} <<EOF
 #!/bin/bash
 #
 # This file is part of CCXXKits.
@@ -503,4 +357,4 @@ find \${SHELLDIR} -type f -name "*.pc" -exec sed -i "s#${PC_PREFIX_CODE}#\${SHEL
 EOF
 
 #
-chmod +x ${FIX_PC_VAR_FILE}
+chmod +x ${RELOCATE_SDK_FILE}
