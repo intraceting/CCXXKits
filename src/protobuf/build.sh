@@ -174,14 +174,17 @@ fi
 ./autogen.sh >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
+#   CFLAGS="-std=c99 -fPIC -D_GLIBCXX_USE_C99_MATH" \
+#   CXXFLAGS="-std=c++11 -fPIC -D_GLIBCXX_USE_C99_MATH" \
+
 #
 ./configure \
     ${CONF_PARAMS} \
     --prefix=${C2X2K_PREFIX_PATH} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
-    CFLAGS="-std=c99 -fPIC -D_GLIBCXX_USE_C99_MATH" \
-    CXXFLAGS="-std=c++11 -fPIC -D_GLIBCXX_USE_C99_MATH" \
+    CFLAGS="-std=c99 -fPIC" \
+    CXXFLAGS="-std=c++11 -fPIC" \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 

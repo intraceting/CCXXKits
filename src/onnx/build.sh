@@ -156,6 +156,9 @@ ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
+#更新PATH和LD_LIBRARY_PATH环境变量,用于后续編译时找到本地file工具.
+export PATH=${C2X2K_NATIVE_SYSROOT}/bin:$PATH
+export LD_LIBRARY_PATH=${C2X2K_NATIVE_SYSROOT}/lib${C2X2K_NATIVE_BITWIDE}:${C2X2K_NATIVE_SYSROOT}/lib:${LD_LIBRARY_PATH}
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
