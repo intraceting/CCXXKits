@@ -48,10 +48,7 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-qt5") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libQtCore5.a"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libQtCore5.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libQtCore5.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libQtCore5.so"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/qt5/qmake"
 }
 else
 {
@@ -95,7 +92,7 @@ cd ${SRC_PATH}
 ./configure \
     -opensource \
     -confirm-license \
-    -prefix ${C2X2K_PREFIX_PATH} \
+    -prefix ${C2X2K_PREFIX_PATH}/qt5 \
     -device "linux-generic-g++" \
     -device-option CROSS_COMPILE=${C2X2K_TARGET_COMPILER_PREFIX} \
     -release \
@@ -117,6 +114,12 @@ make install  >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
+
+#
+cat >${C2X2K_PREFIX_PATH}/qt5/bin/qt.conf <<EOF
+[Paths]
+Prefix=${C2X2K_PREFIX_PATH}/qt5
+EOF
 
 
 #恢复工作目录.
