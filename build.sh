@@ -193,6 +193,11 @@ if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ] &&
     exit_if_error 1 "NATIVE_SYSROOT必需指向有效路径." 1
 fi
 
+###########################################################################################################################################
+
+#打开执行过程显示.
+set -x
+
 #
 export SHELLKITS_HOME=${SHELLKITS_HOME}
 #
@@ -244,6 +249,35 @@ export C2X2K_BUILD_NPROC=6
 #
 #限制目标平台.pc文件搜索路径范围.
 export PKG_CONFIG_LIBDIR=${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/pkgconfig:${C2X2K_PREFIX_PATH}/lib/pkgconfig:${C2X2K_PREFIX_PATH}/share/pkgconfig
+
+#关闭执行过程显示.
+set +x
+
+###############################################################################################################################################################
+
+#
+echo "构建即将开始, 花费的时间较长, 请耐心等待."
+
+#等待确认.
+while true; do
+    read -n 1 -p "按y(Y)确认, q(Q)放弃: " input
+    echo
+
+    case "$input" in
+        y|Y)
+            break
+            ;;
+        q|Q)
+            exit 0
+            ;;
+        *)
+            echo "无效输入, 请重试."
+            ;;
+    esac
+done
+
+###############################################################################################################################################################
+
 
 #
 #Truncate the log file.
@@ -323,10 +357,10 @@ for KIT_NAME in "${KIT_LIST[@]}"; do
 }
 done
 
+###########################################################################################################################################
 
-#
+#SDK重定位脚本, 用于SDK移动后恢复各种配置路径.
 RELOCATE_SDK_FILE="${C2X2K_PREFIX_PATH}/relocate-sdk.sh"
-
 
 #PC文件中路径代号.
 PC_PREFIX_CODE="@C2X2K_PREFIX@"
@@ -337,7 +371,7 @@ find ${C2X2K_PREFIX_PATH} -type f -name "*.pc" -exec cp -f {} {}.c2x2k \;
 #替换PC文件中的路径为特定关键字，以便于目录移动后重新定位路径.
 find ${C2X2K_PREFIX_PATH} -type f -name "*.pc.c2x2k" -exec sed -i "s#${C2X2K_PREFIX_PATH%/}#${PC_PREFIX_CODE%/}#g" {} \;
 
-#
+#生成SDK重定位脚本.
 cat > ${RELOCATE_SDK_FILE} <<EOF
 #!/bin/bash
 #
@@ -355,7 +389,18 @@ find \${SHELLDIR} -type f -name "*.pc.c2x2k" -exec bash -c 'cp -f "\$0" "\${0%.c
 
 #Repair the file paths in the PC files.
 find \${SHELLDIR} -type f -name "*.pc" -exec sed -i "s#${PC_PREFIX_CODE}#\${SHELLDIR%/}#g" {} \;
+
+#
+cat >\${SHELLDIR}/qt5/qt.conf <<QT_EOF
+[Paths]
+Prefix=\${SHELLDIR}/qt5
+QT_EOF
+
+#
+exit 0
 EOF
 
 #
 chmod +x ${RELOCATE_SDK_FILE}
+
+###########################################################################################################################################

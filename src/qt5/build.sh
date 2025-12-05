@@ -48,7 +48,7 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-qt5") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/qt5/qmake"
+CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/qt5/bin/qmake"
 }
 else
 {
@@ -115,12 +115,12 @@ exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#
-cat >${C2X2K_PREFIX_PATH}/qt5/bin/qt.conf <<EOF
-[Paths]
-Prefix=${C2X2K_PREFIX_PATH}/qt5
-EOF
+#SDK重定位脚本, 用于SDK移动后恢复各种配置路径.
+RELOCATE_SDK_FILE="${C2X2K_PREFIX_PATH}/qt5/relocate-sdk.sh"
 
+#复制SDK重定位脚本.
+cp ${SHELLDIR}/relocate-sdk.sh ${RELOCATE_SDK_FILE}
+chmod +x ${RELOCATE_SDK_FILE}
 
 #恢复工作目录.
 cd ${SHELLDIR}
