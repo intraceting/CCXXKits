@@ -94,20 +94,50 @@ cd ${SRC_PATH}
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
-#1: 如果目标平台不是本地, 则需要优先編译本地平台工具(icucross.mk), 因为在交叉編译时需要本地平台工具(icucross.mk)生成目标平台文件.
-if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ] && [ ! -f "${C2X2K_NATIVE_SYSROOT}/config/icucross.mk" ];then
-exit_if_error 1 "目标平台不是本地, 则需要优先編译本地平台工具(icucross.mk), 因为在交叉編译时需要本地平台工具(icucross.mk)生成目标平台文件." 1
+#1: 如果目标平台不是本地, 则需要优先編译本地平台工具(config/icucross.mk), 因为在交叉編译时需要本地平台工具(config/icucross.mk)生成目标平台文件.
+#2: 需要工具在编译目录,而不是安装目录.
+if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ];then
+{
+#set -x
+echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
+#
+mkdir ${SRC_PATH}/build-native
+#
+tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}/build-native" >>${C2X2K_BUILD_LOG_FILE} 2>&1
+#Switch to the source directory(native).
+cd ${SRC_PATH}/build-native
+#
+./icu4c/source/configure \
+    --host=${C2X2K_NATIVE_MACHINE} \
+    --prefix=/tmp/libicu-build-native/ \
+    --enable-icu-config \
+    CC=${C2X2K_NATIVE_COMPILER_C} \
+    CXX=${C2X2K_NATIVE_COMPILER_CXX} \
+    CFLAGS="-fPIC" \
+    CXXFLAGS="-fPIC" \
+    >>${C2X2K_BUILD_LOG_FILE} 2>&1
+exit_if_error $? "native: Failed to configure ${PROJECT_NAME}." $?
+#编译.
+make -j${C2X2K_BUILD_NPROC}  >>${C2X2K_BUILD_LOG_FILE} 2>&1 
+exit_if_error $? "native: ${PROJECT_NAME} build failed during compilation." $?
+
+echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
+#set +x
+}
 fi
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
+#Switch to the source directory.
+cd ${SRC_PATH}
+
 #
 if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv8" ];then
-    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${C2X2K_NATIVE_SYSROOT}"
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${SRC_PATH}/build-native"
 elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv7" ];then
-    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${C2X2K_NATIVE_SYSROOT}"
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${SRC_PATH}/build-native"
 elif [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ];then
-    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${C2X2K_NATIVE_SYSROOT}"
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-cross-build=${SRC_PATH}/build-native"
 else 
     CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE}"
 fi
