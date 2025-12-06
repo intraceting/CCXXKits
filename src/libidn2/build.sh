@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-libidn2") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libidn2.a"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libidn2.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libidn2.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libidn2.so"
+CHECK_LISTS[0]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libidn2.a"
+CHECK_LISTS[1]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libidn2.so"
+CHECK_LISTS[2]="${C2X2K_TARGET_PREFIX}/lib/libidn2.a"
+CHECK_LISTS[3]="${C2X2K_TARGET_PREFIX}/lib/libidn2.so"
 }
 else
 {
@@ -105,12 +105,12 @@ fi
 #
 ./configure \
     ${CONF_PARAMS} \
-    --prefix=${C2X2K_PREFIX_PATH} \
+    --prefix=${C2X2K_TARGET_PREFIX} \
     --disable-valgrind-tests \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
-    CFLAGS="-fPIC -Wl,-rpath-link=${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE} -Wl,-rpath-link=${C2X2K_PREFIX_PATH}/lib" \
-    CXXFLAGS="-fPIC -Wl,-rpath-link=${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE} -Wl,-rpath-link=${C2X2K_PREFIX_PATH}/lib" \
+    CFLAGS="-fPIC -Wl,-rpath-link=${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE} -Wl,-rpath-link=${C2X2K_TARGET_PREFIX}/lib" \
+    CXXFLAGS="-fPIC -Wl,-rpath-link=${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE} -Wl,-rpath-link=${C2X2K_TARGET_PREFIX}/lib" \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 

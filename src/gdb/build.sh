@@ -48,8 +48,8 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-gdb") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/bin/gdb"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/bin/gdbserver"
+CHECK_LISTS[0]="${C2X2K_TARGET_PREFIX}/bin/gdb"
+CHECK_LISTS[1]="${C2X2K_TARGET_PREFIX}/bin/gdbserver"
 }
 else
 {
@@ -111,7 +111,7 @@ echo "##########################################################################
 ./configure \
     --with-gcc-major-version-only \
     --host=${C2X2K_TARGET_MACHINE} \
-    --prefix=${C2X2K_PREFIX_PATH} \
+    --prefix=${C2X2K_TARGET_PREFIX} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     AR=${C2X2K_TARGET_COMPILER_AR} \

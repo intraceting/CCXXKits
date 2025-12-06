@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-util-linux") -eq 0 ];then
 {
-CHECK_LISTS+=("${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfdisk.a")
-CHECK_LISTS+=("${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libfdisk.so")
-CHECK_LISTS+=("${C2X2K_PREFIX_PATH}/lib/libfdisk.a")
-CHECK_LISTS+=("${C2X2K_PREFIX_PATH}/lib/libfdisk.so")
+CHECK_LISTS+=("${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libfdisk.a")
+CHECK_LISTS+=("${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libfdisk.so")
+CHECK_LISTS+=("${C2X2K_TARGET_PREFIX}/lib/libfdisk.a")
+CHECK_LISTS+=("${C2X2K_TARGET_PREFIX}/lib/libfdisk.so")
 }
 else
 {
@@ -112,7 +112,7 @@ fi
 #
 ./configure \
     ${CONF_PARAMS} \
-    --prefix=${C2X2K_PREFIX_PATH} \
+    --prefix=${C2X2K_TARGET_PREFIX} \
     --enable-all-programs \
     --disable-use-tty-group \
     --disable-makeinstall-chown \

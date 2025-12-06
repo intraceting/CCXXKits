@@ -72,18 +72,19 @@ CompilerSelect()
     ${SHELLKITS_HOME}/tools/print-compiler-conf.sh -d SOLUTION_PREFIX=C2X2K -d NATIVE_COMPILER_PREFIX="$1" -d TARGET_COMPILER_PREFIX="$2"
 }
 
-
 #
+NATIVE_PREFIX=""
 NATIVE_COMPILER_PREFIX=/usr/bin/
 NATIVE_CMAKE_BIN=$(which cmake)
 NATIVE_YACC_BIN=$(which yacc)
-NATIVE_SYSROOT=""
 
 #
+TARGET_PREFIX=""
 TARGET_COMPILER_PREFIX=/usr/bin/
 
 #
 BUILD_FLAGS=""
+BUILD_NPROC="6"
 
 #
 PrintUsage()
@@ -96,17 +97,21 @@ usage: [ OPTIONS ]
     -d < name=value >
      自定义环境变量.
 
+     NATIVE_PREFIX=${NATIVE_PREFIX}
+
      NATIVE_COMPILER_PREFIX=${NATIVE_COMPILER_PREFIX}
 
      NATIVE_CMAKE_BIN=${NATIVE_CMAKE_BIN}
 
      NATIVE_YACC_BIN=${NATIVE_YACC_BIN}
 
-     NATIVE_SYSROOT=${NATIVE_SYSROOT}
+     TARGET_PREFIX=${TARGET_PREFIX}
 
      TARGET_COMPILER_PREFIX=${TARGET_COMPILER_PREFIX}
 
      BUILD_FLAGS=${BUILD_FLAGS}
+
+     BUILD_NPROC=${BUILD_NPROC}
 EOF
 }
 
@@ -170,28 +175,27 @@ exit_if_error $? "${COMPILER_CONF}" $?
 eval "${COMPILER_CONF}"
 
 #
-BUILD_PATH=${PWD}/build/
-PREFIX_PATH=${PWD}/sysroot/
-
-#
-mkdir -p ${BUILD_PATH}
-mkdir -p ${PREFIX_PATH}
-
-#
-BUILD_LOG_FILE=${PWD}/build.log
-BUILD_MAKEFILE=${PWD}/makefile
+if [ "${TARGET_PREFIX}" == "" ];then
+TARGET_PREFIX=${PWD}/${C2X2K_TARGET_MACHINE}
+else
+TARGET_PREFIX=$(realpath -m "${TARGET_PREFIX}")
+fi
 
 #
 if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" == "${C2X2K_TARGET_COMPILER_PREFIX}" ];then
-NATIVE_SYSROOT=${PREFIX_PATH}
+NATIVE_PREFIX=${TARGET_PREFIX}
 else
-NATIVE_SYSROOT=$(realpath -s "${NATIVE_SYSROOT}")
+NATIVE_PREFIX=$(realpath -m "${NATIVE_PREFIX}")
 fi
 
 #
-if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ] && [ ! -f ${NATIVE_SYSROOT}/bin/gdb ];then
-    exit_if_error 1 "NATIVE_SYSROOT必需指向有效路径." 1
+if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ] && [ ! -f ${NATIVE_PREFIX}/bin/gdb ];then
+    exit_if_error 1 "NATIVE_PREFIX必需指向有效路径." 1
 fi
+
+#
+BUILD_LOG_FILE=${PWD}/build.log
+BUILD_PATH=${PWD}/build/
 
 ###########################################################################################################################################
 
@@ -237,18 +241,15 @@ export C2X2K_TARGET_COMPILER_VERSION=${C2X2K_TARGET_COMPILER_VERSION}
 export C2X2K_NATIVE_GLIBC_MAX_VERSION=${C2X2K_NATIVE_GLIBC_MAX_VERSION}
 export C2X2K_TARGET_GLIBC_MAX_VERSION=${C2X2K_TARGET_GLIBC_MAX_VERSION}
 #
-export C2X2K_NATIVE_SYSROOT=${NATIVE_SYSROOT}
-#
-export C2X2K_BUILD_PATH=${BUILD_PATH}
-export C2X2K_PREFIX_PATH=${PREFIX_PATH}
+export C2X2K_NATIVE_PREFIX=${NATIVE_PREFIX}
+export C2X2K_TARGET_PREFIX=${TARGET_PREFIX}
 #
 export C2X2K_BUILD_LOG_FILE=${BUILD_LOG_FILE}
-#
-export C2X2K_BUILD_NPROC=6
-
+export C2X2K_BUILD_PATH=${BUILD_PATH}
+export C2X2K_BUILD_NPROC=${BUILD_NPROC}
 #
 #限制目标平台.pc文件搜索路径范围.
-export PKG_CONFIG_LIBDIR=${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/pkgconfig:${C2X2K_PREFIX_PATH}/lib/pkgconfig:${C2X2K_PREFIX_PATH}/share/pkgconfig
+export PKG_CONFIG_LIBDIR=${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/pkgconfig:${C2X2K_TARGET_PREFIX}/lib/pkgconfig:${C2X2K_TARGET_PREFIX}/share/pkgconfig
 
 #关闭执行过程显示.
 set +x
@@ -278,6 +279,9 @@ done
 
 ###############################################################################################################################################################
 
+#
+mkdir -p ${BUILD_PATH}
+mkdir -p ${TARGET_PREFIX}
 
 #
 #Truncate the log file.
@@ -360,16 +364,16 @@ done
 ###########################################################################################################################################
 
 #SDK重定位脚本, 用于SDK移动后恢复各种配置路径.
-RELOCATE_SDK_FILE="${C2X2K_PREFIX_PATH}/relocate-sdk.sh"
+RELOCATE_SDK_FILE="${C2X2K_TARGET_PREFIX}/relocate-sdk.sh"
 
 #PC文件中路径代号.
 PC_PREFIX_CODE="@C2X2K_PREFIX@"
 
 #所有PC文件全部备份，以便将来目录移动后可以进行本地化修复.
-find ${C2X2K_PREFIX_PATH} -type f -name "*.pc" -exec cp -f {} {}.c2x2k \;
+find ${C2X2K_TARGET_PREFIX} -type f -name "*.pc" -exec cp -f {} {}.c2x2k \;
 
 #替换PC文件中的路径为特定关键字，以便于目录移动后重新定位路径.
-find ${C2X2K_PREFIX_PATH} -type f -name "*.pc.c2x2k" -exec sed -i "s#${C2X2K_PREFIX_PATH%/}#${PC_PREFIX_CODE%/}#g" {} \;
+find ${C2X2K_TARGET_PREFIX} -type f -name "*.pc.c2x2k" -exec sed -i "s#${C2X2K_TARGET_PREFIX%/}#${PC_PREFIX_CODE%/}#g" {} \;
 
 #生成SDK重定位脚本.
 cat > ${RELOCATE_SDK_FILE} <<EOF

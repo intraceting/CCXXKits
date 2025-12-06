@@ -57,10 +57,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-live555") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libliveMedia.a"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libliveMedia.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libliveMedia.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libliveMedia.so"
+CHECK_LISTS[0]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libliveMedia.a"
+CHECK_LISTS[1]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libliveMedia.so"
+CHECK_LISTS[2]="${C2X2K_TARGET_PREFIX}/lib/libliveMedia.a"
+CHECK_LISTS[3]="${C2X2K_TARGET_PREFIX}/lib/libliveMedia.so"
 }
 else
 {
@@ -126,13 +126,13 @@ echo "##########################################################################
 
 #编译.
 make -j${C2X2K_BUILD_NPROC} \
-    PREFIX=${C2X2K_PREFIX_PATH} \
+    PREFIX=${C2X2K_TARGET_PREFIX} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     AR=${C2X2K_TARGET_COMPILER_AR} \
-    CFLAGS="${COMPILE_OPTS} -I${C2X2K_PREFIX_PATH}/include" \
-    CXXFLAGS="${COMPILE_OPTS} -I${C2X2K_PREFIX_PATH}/include" \
-    LDFLAGS="-L${C2X2K_PREFIX_PATH}/lib -Wl,-rpath-link=${C2X2K_PREFIX_PATH}/lib" \
+    CFLAGS="${COMPILE_OPTS} -I${C2X2K_TARGET_PREFIX}/include" \
+    CXXFLAGS="${COMPILE_OPTS} -I${C2X2K_TARGET_PREFIX}/include" \
+    LDFLAGS="-L${C2X2K_TARGET_PREFIX}/lib -Wl,-rpath-link=${C2X2K_TARGET_PREFIX}/lib" \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "${PROJECT_NAME} build failed during compilation." $?
 
@@ -140,13 +140,13 @@ echo "##########################################################################
 
 #安装.
 make install \
-    PREFIX=${C2X2K_PREFIX_PATH} \
+    PREFIX=${C2X2K_TARGET_PREFIX} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     AR=${C2X2K_TARGET_COMPILER_AR} \
-    CFLAGS="${COMPILE_OPTS} -I${C2X2K_PREFIX_PATH}/include" \
-    CXXFLAGS="${COMPILE_OPTS} -I${C2X2K_PREFIX_PATH}/include" \
-    LDFLAGS="-L${C2X2K_PREFIX_PATH}/lib -Wl,-rpath-link=${C2X2K_PREFIX_PATH}/lib" \
+    CFLAGS="${COMPILE_OPTS} -I${C2X2K_TARGET_PREFIX}/include" \
+    CXXFLAGS="${COMPILE_OPTS} -I${C2X2K_TARGET_PREFIX}/include" \
+    LDFLAGS="-L${C2X2K_TARGET_PREFIX}/lib -Wl,-rpath-link=${C2X2K_TARGET_PREFIX}/lib" \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1 
 exit_if_error $? "Failed to install ${PROJECT_NAME}." $?
 

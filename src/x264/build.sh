@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-x264") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libx264.a"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libx264.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libx264.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libx264.so"
+CHECK_LISTS[0]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libx264.a"
+CHECK_LISTS[1]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libx264.so"
+CHECK_LISTS[2]="${C2X2K_TARGET_PREFIX}/lib/libx264.a"
+CHECK_LISTS[3]="${C2X2K_TARGET_PREFIX}/lib/libx264.so"
 }
 else
 {
@@ -97,7 +97,7 @@ echo "##########################################################################
 #
 ./configure \
     --host=${C2X2K_TARGET_MACHINE} \
-    --prefix=${C2X2K_PREFIX_PATH}/ \
+    --prefix=${C2X2K_TARGET_PREFIX}/ \
     --cross-prefix=${C2X2K_TARGET_COMPILER_PREFIX} \
     --extra-cflags="-fPIC" \
     --enable-pic  \

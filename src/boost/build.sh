@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-boost") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libboost_system.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libboost_system.so"
+CHECK_LISTS[0]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
+CHECK_LISTS[1]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libboost_system.so"
+CHECK_LISTS[2]="${C2X2K_TARGET_PREFIX}/lib/libboost_system.a"
+CHECK_LISTS[3]="${C2X2K_TARGET_PREFIX}/lib/libboost_system.so"
 }
 else
 {
@@ -100,7 +100,7 @@ echo "##########################################################################
 chmod +0500 ./bootstrap.sh
 
 #
-./bootstrap.sh -prefix=${C2X2K_PREFIX_PATH} --without-libraries=python >>${C2X2K_BUILD_LOG_FILE} 2>&1
+./bootstrap.sh -prefix=${C2X2K_TARGET_PREFIX} --without-libraries=python >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}

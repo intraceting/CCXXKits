@@ -48,8 +48,8 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-ffmpeg") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/bin/ffmpeg"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/bin/ffprob"
+CHECK_LISTS[0]="${C2X2K_TARGET_PREFIX}/bin/ffmpeg"
+CHECK_LISTS[1]="${C2X2K_TARGET_PREFIX}/bin/ffprob"
 }
 else
 {
@@ -108,12 +108,12 @@ chmod 0755 ./ffbuild/*.sh
 
 #
 ./configure ${MAKE_MORE_CONF} \
-    --prefix=${C2X2K_PREFIX_PATH}/ \
+    --prefix=${C2X2K_TARGET_PREFIX}/ \
     --target-os=linux \
     --enable-cross-compile \
     --cross-prefix=${C2X2K_TARGET_COMPILER_PREFIX} \
-    --extra-cflags="-I${C2X2K_PREFIX_PATH}/include" \
-    --extra-ldflags="-Wl,-rpath-link=${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE} -Wl,-rpath-link=${C2X2K_PREFIX_PATH}/lib" \
+    --extra-cflags="-I${C2X2K_TARGET_PREFIX}/include" \
+    --extra-ldflags="-Wl,-rpath-link=${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE} -Wl,-rpath-link=${C2X2K_TARGET_PREFIX}/lib" \
     --extra-libs="-lpthread -lm -ldl" \
     --pkg-config="pkg-config" \
     --enable-gpl \

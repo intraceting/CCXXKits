@@ -47,10 +47,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-bzip2") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libbz2.a"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libbz2.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libbz2.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libbz2.so"
+CHECK_LISTS[0]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libbz2.a"
+CHECK_LISTS[1]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libbz2.so"
+CHECK_LISTS[2]="${C2X2K_TARGET_PREFIX}/lib/libbz2.a"
+CHECK_LISTS[3]="${C2X2K_TARGET_PREFIX}/lib/libbz2.so"
 }
 else
 {
@@ -109,7 +109,7 @@ echo "##########################################################################
 
 #安装.
 make install \
-    PREFIX=${C2X2K_PREFIX_PATH}/ \
+    PREFIX=${C2X2K_TARGET_PREFIX}/ \
     CC=${C2X2K_TARGET_COMPILER_C} \
     LD=${C2X2K_TARGET_COMPILER_LD} \
     AR=${C2X2K_TARGET_COMPILER_AR} \

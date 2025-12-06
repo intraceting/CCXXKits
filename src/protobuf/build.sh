@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-protobuf") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libprotobuf.a"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libprotobuf.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libprotobuf.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libprotobuf.so"
+CHECK_LISTS[0]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libprotobuf.a"
+CHECK_LISTS[1]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libprotobuf.so"
+CHECK_LISTS[2]="${C2X2K_TARGET_PREFIX}/lib/libprotobuf.a"
+CHECK_LISTS[3]="${C2X2K_TARGET_PREFIX}/lib/libprotobuf.so"
 }
 else
 {
@@ -133,11 +133,11 @@ fi
 #
 ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
     ${CMAKE_MORE_CONF} \
-    -DCMAKE_PREFIX_PATH=${C2X2K_PREFIX_PATH}/ \
-    -DCMAKE_INSTALL_PREFIX=${C2X2K_PREFIX_PATH}/ \
+    -DCMAKE_PREFIX_PATH=${C2X2K_TARGET_PREFIX}/ \
+    -DCMAKE_INSTALL_PREFIX=${C2X2K_TARGET_PREFIX}/ \
     -DCMAKE_C_COMPILER=${C2X2K_TARGET_COMPILER_C} \
     -DCMAKE_CXX_COMPILER=${C2X2K_TARGET_COMPILER_CXX} \
-    -DCMAKE_FIND_ROOT_PATH=${C2X2K_PREFIX_PATH}/ \
+    -DCMAKE_FIND_ROOT_PATH=${C2X2K_TARGET_PREFIX}/ \
     -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
@@ -163,11 +163,11 @@ cd ${SRC_PATH}
 
 #
 if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv8" ];then
-    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_NATIVE_PREFIX}/bin/protoc"
 elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv7" ];then
-    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_NATIVE_PREFIX}/bin/protoc"
 else
-    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
+    CONF_PARAMS="--host=${C2X2K_TARGET_MACHINE} --with-protoc=${C2X2K_NATIVE_PREFIX}/bin/protoc"
 fi
 
 #
@@ -180,7 +180,7 @@ exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 #
 ./configure \
     ${CONF_PARAMS} \
-    --prefix=${C2X2K_PREFIX_PATH} \
+    --prefix=${C2X2K_TARGET_PREFIX} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     CFLAGS="-std=c99 -fPIC" \

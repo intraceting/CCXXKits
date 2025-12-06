@@ -48,7 +48,7 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-openssh") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/sbin/sshd"
+CHECK_LISTS[0]="${C2X2K_TARGET_PREFIX}/sbin/sshd"
 }
 else
 {
@@ -106,20 +106,20 @@ fi
 #
 ./configure \
     ${CONF_PARAMS} \
-    --prefix=${C2X2K_PREFIX_PATH} \
+    --prefix=${C2X2K_TARGET_PREFIX} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     AR=${C2X2K_TARGET_COMPILER_AR} \
     LD=${C2X2K_TARGET_COMPILER_LD} \
     CFLAGS="-std=c99 -fPIC" \
     CXXFLAGS="-std=c++11 -fPIC" \
-    --with-zlib="${C2X2K_PREFIX_PATH}" \
+    --with-zlib="${C2X2K_TARGET_PREFIX}" \
     --without-zlib-version-check \
-    --with-ssl-dir="${C2X2K_PREFIX_PATH}" \
+    --with-ssl-dir="${C2X2K_TARGET_PREFIX}" \
     --without-openssl-header-check \
     --disable-etc-default-login \
     --disable-strip \
-    --with-privsep-path="${C2X2K_PREFIX_PATH}/var/empty" \
+    --with-privsep-path="${C2X2K_TARGET_PREFIX}/var/empty" \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 

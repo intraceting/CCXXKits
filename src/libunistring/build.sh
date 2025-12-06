@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-libunistring") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libunistring.a"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libunistring.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libunistring.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libunistring.so"
+CHECK_LISTS[0]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libunistring.a"
+CHECK_LISTS[1]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libunistring.so"
+CHECK_LISTS[2]="${C2X2K_TARGET_PREFIX}/lib/libunistring.a"
+CHECK_LISTS[3]="${C2X2K_TARGET_PREFIX}/lib/libunistring.so"
 }
 else
 {
@@ -112,7 +112,7 @@ fi
 #
 ./configure \
     ${CONF_PARAMS} \
-    --prefix=${C2X2K_PREFIX_PATH} \
+    --prefix=${C2X2K_TARGET_PREFIX} \
     CC=${C2X2K_TARGET_COMPILER_C} \
     CXX=${C2X2K_TARGET_COMPILER_CXX} \
     CFLAGS="-fPIC" \

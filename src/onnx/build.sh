@@ -48,10 +48,10 @@ PROJECT_NAME=${PROJECT_NAME^^}
 #
 if [ $(check_keyword ${BUILD_FLAGS} "rebuild-onnx") -eq 0 ];then
 {
-CHECK_LISTS[0]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libonnx.a"
-CHECK_LISTS[1]="${C2X2K_PREFIX_PATH}/lib${C2X2K_TARGET_BITWIDE}/libonnx.so"
-CHECK_LISTS[2]="${C2X2K_PREFIX_PATH}/lib/libonnx.a"
-CHECK_LISTS[3]="${C2X2K_PREFIX_PATH}/lib/libonnx.so"
+CHECK_LISTS[0]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libonnx.a"
+CHECK_LISTS[1]="${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/libonnx.so"
+CHECK_LISTS[2]="${C2X2K_TARGET_PREFIX}/lib/libonnx.a"
+CHECK_LISTS[3]="${C2X2K_TARGET_PREFIX}/lib/libonnx.so"
 }
 else
 {
@@ -112,7 +112,7 @@ cd ${BUILD_PATH_TMP}
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
 #1: 如果目标平台不是本地, 则需要优先編译本地平台工具(protoc), 因为在交叉編译时需要本地平台工具(protoc)生成目标平台文件.
-if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ] && [ ! -f "${C2X2K_NATIVE_SYSROOT}/bin/protoc" ];then
+if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ] && [ ! -f "${C2X2K_NATIVE_PREFIX}/bin/protoc" ];then
     exit_if_error 1 "目标平台不是本地, 则需要优先編译本地平台工具(protoc), 因为在交叉編译时需要本地平台工具(protoc)生成目标平台文件." 1
 fi
 
@@ -120,11 +120,11 @@ echo "##########################################################################
 
 #
 if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv8" ];then
-    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
+    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=aarch64  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_NATIVE_PREFIX}/bin/protoc"
 elif [ "${C2X2K_TARGET_PLATFORM}" == "arm" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv7" ];then
-    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=armv7  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
+    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=armv7  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_NATIVE_PREFIX}/bin/protoc"
 else
-    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_NATIVE_SYSROOT}/bin/protoc"
+    CMAKE_MORE_CONF="-DCMAKE_SYSTEM_NAME=Linux -DCMAKE_SYSTEM_PROCESSOR=x86_64  -DProtobuf_PROTOC_EXECUTABLE=${C2X2K_NATIVE_PREFIX}/bin/protoc"
 fi
 
 # 有些編译器没有ARM平台CRC32内置的算法.
@@ -136,13 +136,13 @@ fi
 #
 ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
     ${CMAKE_MORE_CONF} \
-    -DCMAKE_PREFIX_PATH=${C2X2K_PREFIX_PATH}/ \
-    -DCMAKE_INSTALL_PREFIX=${C2X2K_PREFIX_PATH}/ \
+    -DCMAKE_PREFIX_PATH=${C2X2K_TARGET_PREFIX}/ \
+    -DCMAKE_INSTALL_PREFIX=${C2X2K_TARGET_PREFIX}/ \
     -DCMAKE_C_COMPILER=${C2X2K_TARGET_COMPILER_C} \
     -DCMAKE_CXX_COMPILER=${C2X2K_TARGET_COMPILER_CXX} \
     -DCMAKE_LINKER=${C2X2K_TARGET_COMPILER_LD} \
     -DCMAKE_AR=${C2X2K_TARGET_COMPILER_AR} \
-    -DCMAKE_FIND_ROOT_PATH=${C2X2K_PREFIX_PATH}/ \
+    -DCMAKE_FIND_ROOT_PATH=${C2X2K_TARGET_PREFIX}/ \
     -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER \
     -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY \
     -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
@@ -157,8 +157,8 @@ ${C2X2K_NATIVE_CMAKE_BIN} ${SRC_PATH} \
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 
 #更新PATH和LD_LIBRARY_PATH环境变量,用于后续編译时找到本地file工具.
-export PATH=${C2X2K_NATIVE_SYSROOT}/bin:$PATH
-export LD_LIBRARY_PATH=${C2X2K_NATIVE_SYSROOT}/lib${C2X2K_NATIVE_BITWIDE}:${C2X2K_NATIVE_SYSROOT}/lib:${LD_LIBRARY_PATH}
+export PATH=${C2X2K_NATIVE_PREFIX}/bin:$PATH
+export LD_LIBRARY_PATH=${C2X2K_NATIVE_PREFIX}/lib${C2X2K_NATIVE_BITWIDE}:${C2X2K_NATIVE_PREFIX}/lib:${LD_LIBRARY_PATH}
 
 echo "#####################################################################################" >>${C2X2K_BUILD_LOG_FILE}
 
