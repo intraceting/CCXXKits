@@ -251,7 +251,7 @@ export C2X2K_BUILD_PATH=${BUILD_PATH}
 
 #
 #限制目标平台.pc文件搜索路径范围.
-export PKG_CONFIG_LIBDIR=${C2X2K_TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/pkgconfig:${C2X2K_TARGET_PREFIX}/lib/pkgconfig:${C2X2K_TARGET_PREFIX}/share/pkgconfig
+export PKG_CONFIG_LIBDIR=${TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE}/pkgconfig:${TARGET_PREFIX}/lib/pkgconfig:${TARGET_PREFIX}/share/pkgconfig
 
 #关闭执行过程显示.
 set +x
