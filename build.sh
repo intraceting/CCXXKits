@@ -357,7 +357,7 @@ for KIT_NAME in "${KIT_LIST[@]}"; do
 {
     echo ">>>>>>>>>>>>>>>>>>>>>>>>>${KIT_NAME}>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 
-    ${SHELLDIR}/src/${KIT_NAME}/build.sh "${BUILD_FLAGS}" || exit $?
+    /usr/bin/time -f "Build completed at %es." ${SHELLDIR}/src/${KIT_NAME}/build.sh "${BUILD_FLAGS}" || exit $?
 
     echo ">>>>>>>>>>>>>>>>>>>>>>>>>${KIT_NAME}>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 }
