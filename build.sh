@@ -395,7 +395,7 @@ find \${SHELLDIR} -type f -name "*.pc.c2x2k" -exec bash -c 'cp -f "\$0" "\${0%.c
 find \${SHELLDIR} -type f -name "*.pc" -exec sed -i "s#${PC_PREFIX_CODE}#\${SHELLDIR%/}#g" {} \;
 
 #
-cat >\${SHELLDIR}/qt5/qt.conf <<QT_EOF
+cat >\${SHELLDIR}/qt5/bin/qt.conf <<QT_EOF
 [Paths]
 Prefix=\${SHELLDIR}/qt5
 QT_EOF
