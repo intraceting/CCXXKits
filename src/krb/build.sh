@@ -73,7 +73,7 @@ done
 echo "Building ${PROJECT_NAME}, ..."
 
 #
-SRC_FILE=${SHELLDIR}/gss-1.0.4.tar.gz
+SRC_FILE=${SHELLDIR}/krb5-1.22.1.tar.gz
 #
 SRC_PATH=${C2X2K_BUILD_PATH}/${PROJECT_NAME}/
 
@@ -89,7 +89,7 @@ mkdir -p "${SRC_PATH}"
 tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG_FILE} 2>&1
 
 #Switch to the source directory.
-cd ${SRC_PATH}
+cd ${SRC_PATH}/src/
 
 #
 if [ "${C2X2K_TARGET_PLATFORM}" == "aarch64" ] || [ "${C2X2K_TARGET_PLATFORM:0:5}" == "armv8" ];then
@@ -101,6 +101,22 @@ else
 fi
 
 #
+cat > ./config.site <<EOF
+# musl: 构造函数支持
+ac_cv_have___attribute__constructor=yes
+ac_cv_have___attribute__destructor=yes
+
+# musl 没有的
+ac_cv_func___secure_getenv=no
+ac_cv_func_error_message=no
+ac_cv_func_res_ninit=no
+ac_cv_func_res_nclose=no
+ac_cv_func_res_ndestroy=no
+EOF
+
+
+#
+CONFIG_SITE=./config.site \
 ./configure \
     ${CONF_PARAMS} \
     --prefix=${C2X2K_TARGET_PREFIX} \

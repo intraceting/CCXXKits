@@ -70,7 +70,8 @@ done
 echo "Building ${PROJECT_NAME}, ..."
 
 #
-SRC_FILE=${SHELLDIR}/qt-everywhere-opensource-src-5.15.18.tar.xz
+#SRC_FILE=${SHELLDIR}/qt-everywhere-opensource-src-5.15.18.tar.xz
+SRC_FILE=${SHELLDIR}/qt-everywhere-src-5.12.8.tar.xz
 #
 SRC_PATH=${C2X2K_BUILD_PATH}/${PROJECT_NAME}/
 
@@ -85,8 +86,19 @@ mkdir -p "${SRC_PATH}"
 #
 tar --strip-components=1 -xvf "${SRC_FILE}" -C "${SRC_PATH}" >>${C2X2K_BUILD_LOG_FILE} 2>&1
 
+#Qt5.12.8需要.
+if [ -f ${SRC_PATH}/qtbase/include/QtCore/qglobal.h ];then
+cat >>${SRC_PATH}/qtbase/include/QtCore/qglobal.h<<EOF
+/**/
+#ifdef __cplusplus
+#include "limits"
+#endif //__cplusplus
+EOF
+fi
+
 #Switch to the source directory.
 cd ${SRC_PATH}
+
 
 #
 ./configure \
@@ -97,6 +109,10 @@ cd ${SRC_PATH}
     -device-option CROSS_COMPILE=${C2X2K_TARGET_COMPILER_PREFIX} \
     -release \
     -no-opengl \
+    -no-vulkan \
+    -nomake tests \
+    -nomake examples \
+    -no-compile-examples \
     >>${C2X2K_BUILD_LOG_FILE} 2>&1
 exit_if_error $? "Failed to configure ${PROJECT_NAME}." $?
 

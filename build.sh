@@ -287,6 +287,8 @@ mkdir -p ${TARGET_PREFIX}
 #Truncate the log file.
 > "${C2X2K_BUILD_LOG_FILE}"
 
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
 #
 KIT_LIST+=("zlib")
 KIT_LIST+=("lz4")
@@ -299,7 +301,7 @@ KIT_LIST+=("flatbuffers")
 KIT_LIST+=("FILE")
 KIT_LIST+=("openblas")
 KIT_LIST+=("openssl")
-KIT_LIST+=("gss")
+#KIT_LIST+=("krb")
 KIT_LIST+=("libsodium")
 KIT_LIST+=("x264")
 KIT_LIST+=("x265")
@@ -345,10 +347,26 @@ KIT_LIST+=("openssh")
 KIT_LIST+=("boost")
 KIT_LIST+=("flann")
 KIT_LIST+=("octomap")
+
+#
+if [[ "${C2X2K_TARGET_MACHINE,,}" != *"musl"* ]]; then
 KIT_LIST+=("PCL")
+else 
+echo "在${C2X2K_TARGET_MACHINE}平台不支持PCL, 跳过."
+fi
+
 KIT_LIST+=("sqlite")
+
+#
+if [[ "${C2X2K_TARGET_MACHINE,,}" != *"musl"* ]]; then
 KIT_LIST+=("zlmediakit")
+else
+echo "在${C2X2K_TARGET_MACHINE}平台不支持ZLMediaKit, 跳过."
+fi 
+
 KIT_LIST+=("qt5")
+
+echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 #
 for KIT_NAME in "${KIT_LIST[@]}"; do
