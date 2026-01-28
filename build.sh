@@ -357,7 +357,9 @@ else
 echo "在${C2X2K_TARGET_MACHINE}平台不支持PCL, 跳过."
 fi
 
-KIT_LIST+=("sqlite")
+#二选其一.
+#KIT_LIST+=("sqlite")
+KIT_LIST+=("sqlcipher")
 
 #
 if [[ "${C2X2K_TARGET_MACHINE,,}" != *"musl"* ]]; then
