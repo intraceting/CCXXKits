@@ -185,7 +185,11 @@ fi
 if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" == "${C2X2K_TARGET_COMPILER_PREFIX}" ];then
 NATIVE_PREFIX=${TARGET_PREFIX}
 else
+if [ "${NATIVE_PREFIX}" == "" ];then
+NATIVE_PREFIX=${PWD}/${C2X2K_NATIVE_MACHINE}
+else
 NATIVE_PREFIX=$(realpath -m "${NATIVE_PREFIX}")
+fi
 fi
 
 #
@@ -324,6 +328,8 @@ KIT_LIST+=("pcre")
 KIT_LIST+=("pcre2")
 KIT_LIST+=("json-c")
 KIT_LIST+=("unixodbc")
+KIT_LIST+=("OpenCL-Headers")
+KIT_LIST+=("OpenCL-ICD-Loader")
 KIT_LIST+=("libsrtp")
 KIT_LIST+=("usrsctp")
 KIT_LIST+=("libopus")
