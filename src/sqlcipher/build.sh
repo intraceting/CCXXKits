@@ -104,6 +104,7 @@ fi
 ./configure \
     ${CONF_PARAMS} \
     --prefix=${C2X2K_TARGET_PREFIX} \
+    --disable-rpath \
     --memsys5 \
     --memsys3 \
     --fts3 \
