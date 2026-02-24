@@ -103,6 +103,9 @@ else
     CONF_PARAMS="--host=x86_64-linux"
 fi
 
+#更新LD_LIBRARY_PATH环境变量,用于后续編译时找到本地ssl工具.
+export LD_LIBRARY_PATH=${C2X2K_NATIVE_PREFIX}/lib${C2X2K_NATIVE_BITWIDE}:${C2X2K_NATIVE_PREFIX}/lib:${LD_LIBRARY_PATH}
+
 #
 ./configure \
     ${CONF_PARAMS} \
