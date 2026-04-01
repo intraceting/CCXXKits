@@ -338,7 +338,6 @@ KIT_LIST+=("ffmpeg")
 KIT_LIST+=("abseil-cpp")
 KIT_LIST+=("protobuf")
 KIT_LIST+=("onnx")
-KIT_LIST+=("opencv")
 KIT_LIST+=("live555")
 KIT_LIST+=("libhiredis")
 KIT_LIST+=("redis-plus-plus")
@@ -358,6 +357,8 @@ KIT_LIST+=("openssh")
 KIT_LIST+=("boost")
 KIT_LIST+=("flann")
 KIT_LIST+=("octomap")
+KIT_LIST+=("opencv")
+
 
 #
 if [[ "${C2X2K_TARGET_MACHINE,,}" != *"musl"* ]]; then
@@ -378,6 +379,13 @@ echo "在${C2X2K_TARGET_MACHINE}平台不支持ZLMediaKit, 跳过."
 fi 
 
 KIT_LIST+=("qt5")
+
+#
+if [ "${C2X2K_NATIVE_MULTIARCH}" == "${C2X2K_TARGET_MULTIARCH}" ];then
+if [ -f "/usr/local/cuda/bin/nvcc" ];then
+KIT_LIST+=("opencv-cuda")
+fi
+fi
 
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
