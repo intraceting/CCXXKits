@@ -83,6 +83,10 @@ TARGET_PREFIX=""
 TARGET_COMPILER_PREFIX=/usr/bin/
 
 #
+TARGET_CUDA_PREFIX=""
+TARGET_COMPILER_NVCC=""
+
+#
 BUILD_FLAGS=""
 BUILD_NPROC="6"
 
@@ -108,6 +112,10 @@ usage: [ OPTIONS ]
      TARGET_PREFIX=${TARGET_PREFIX}
 
      TARGET_COMPILER_PREFIX=${TARGET_COMPILER_PREFIX}
+
+     TARGET_CUDA_PREFIX=${TARGET_CUDA_PREFIX}
+
+     TARGET_COMPILER_NVCC=\${TARGET_CUDA_PREFIX}/bin/nvcc
 
      BUILD_FLAGS=${BUILD_FLAGS}
 
@@ -198,6 +206,11 @@ if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ] &&
 fi
 
 #
+if [ "${TARGET_COMPILER_NVCC}" == "" ];then
+TARGET_COMPILER_NVCC="${TARGET_CUDA_PREFIX}/bin/nvcc"
+fi
+
+#
 BUILD_LOG_FILE=${PWD}/build.log
 BUILD_PATH=${PWD}/build/
 
@@ -247,6 +260,9 @@ export C2X2K_TARGET_MULTIARCH=${C2X2K_TARGET_MULTIARCH}
 #
 export C2X2K_NATIVE_PREFIX=${NATIVE_PREFIX}
 export C2X2K_TARGET_PREFIX=${TARGET_PREFIX}
+#
+export C2X2K_TARGET_CUDA_PREFIX=${TARGET_CUDA_PREFIX}
+export C2X2K_TARGET_COMPILER_NVCC=${TARGET_COMPILER_NVCC}
 #
 export C2X2K_BUILD_NPROC=${BUILD_NPROC}
 #
@@ -381,11 +397,10 @@ fi
 KIT_LIST+=("qt5")
 
 #
-if [ "${C2X2K_NATIVE_MULTIARCH}" == "${C2X2K_TARGET_MULTIARCH}" ];then
-if [ -f "/usr/local/cuda/bin/nvcc" ];then
+if [ -f "${C2X2K_TARGET_COMPILER_NVCC}" ] && [ -d "${C2X2K_TARGET_CUDA_PREFIX}" ];then
 KIT_LIST+=("opencv-cuda")
 fi
-fi
+
 
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
