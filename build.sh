@@ -404,7 +404,6 @@ KIT_LIST+=("openssh")
 KIT_LIST+=("boost")
 KIT_LIST+=("flann")
 KIT_LIST+=("octomap")
-KIT_LIST+=("opencv")
 
 
 #
@@ -426,6 +425,7 @@ echo "在${C2X2K_TARGET_MACHINE}平台不支持ZLMediaKit, 跳过."
 fi 
 
 KIT_LIST+=("qt5")
+KIT_LIST+=("opencv")
 
 #
 if [ "${TARGET_CUDA_VERSION}" != "" ];then
