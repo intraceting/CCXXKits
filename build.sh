@@ -225,7 +225,7 @@ fi
 #
 if [ -f "${TARGET_COMPILER_NVCC}" ] && [ -d "${TARGET_CUDA_PREFIX}" ];then
 {
-    #
+    ##
     if [ "${TARGET_CUDA_TOOLKIT_NAME}" == "" ];then
         TARGET_CUDA_TOOLKIT_NAME="${C2X2K_TARGET_PLATFORM}-linux"
     fi
