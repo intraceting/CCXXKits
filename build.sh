@@ -77,6 +77,7 @@ NATIVE_PREFIX=""
 NATIVE_COMPILER_PREFIX=/usr/bin/
 NATIVE_CMAKE_BIN=$(which cmake)
 NATIVE_YACC_BIN=$(which yacc)
+NATIVE_CHRPATH_BIN=$(which chrpath)
 
 #
 TARGET_PREFIX=""
@@ -85,10 +86,15 @@ TARGET_COMPILER_PREFIX=/usr/bin/
 #
 TARGET_CUDA_PREFIX=""
 TARGET_COMPILER_NVCC=""
+TARGET_CUDA_TOOLKIT_NAME=""
+TARGET_CUDA_WITH_CUDNN="OFF"
+TARGET_CUDA_WITH_NVCUVID="OFF"
+TARGET_CUDA_WITH_NVCUVENC="OFF"
+TARGET_CUDA_VERSION=""
 
 #
 BUILD_FLAGS=""
-BUILD_NPROC="6"
+BUILD_NPROC=$(( $(nproc) * 2 / 3 ))
 
 #
 PrintUsage()
@@ -116,6 +122,14 @@ usage: [ OPTIONS ]
      TARGET_CUDA_PREFIX=${TARGET_CUDA_PREFIX}
 
      TARGET_COMPILER_NVCC=\${TARGET_CUDA_PREFIX}/bin/nvcc
+
+     TARGET_CUDA_TOOLKIT_NAME=${TARGET_CUDA_TOOLKIT_NAME}
+
+     TARGET_CUDA_WITH_CUDNN=${TARGET_CUDA_WITH_CUDNN}
+
+     TARGET_CUDA_WITH_NVCUVID=${TARGET_CUDA_WITH_NVCUVID}
+
+     TARGET_CUDA_WITH_NVCUVENC=${TARGET_CUDA_WITH_NVCUVENC}
 
      BUILD_FLAGS=${BUILD_FLAGS}
 
@@ -145,9 +159,7 @@ done
 
 #必须在项目之外运行此脚本.
 if [ "${SHELLDIR}" == "${PWD}" ];then
-{
-    exit_if_error 1 "This script must be run outside of the project." 1
-}
+exit_if_error 1 "禁止在项目路径中执行脚本." 1
 fi
 
 
@@ -202,12 +214,26 @@ fi
 
 #
 if [ "${C2X2K_NATIVE_COMPILER_PREFIX}" != "${C2X2K_TARGET_COMPILER_PREFIX}" ] && [ ! -f ${NATIVE_PREFIX}/bin/gdb ];then
-    exit_if_error 1 "NATIVE_PREFIX必需指向有效路径." 1
+exit_if_error 1 "NATIVE_PREFIX必需指向有效路径." 1
 fi
 
 #
-if [ "${TARGET_COMPILER_NVCC}" == "" ];then
+if [ "${TARGET_CUDA_PREFIX}" != "" ] && [ "${TARGET_COMPILER_NVCC}" == "" ];then
 TARGET_COMPILER_NVCC="${TARGET_CUDA_PREFIX}/bin/nvcc"
+fi
+
+#
+if [ -f "${TARGET_COMPILER_NVCC}" ] && [ -d "${TARGET_CUDA_PREFIX}" ];then
+{
+    ##
+    if [ "${TARGET_CUDA_TOOLKIT_NAME}" == "" ];then
+        TARGET_CUDA_TOOLKIT_NAME="${C2X2K_TARGET_PLATFORM}-linux"
+    fi
+
+    #
+    TARGET_CUDA_VERSION=$(${TARGET_COMPILER_NVCC} --version | grep -oP 'V\d+(\.\d+)+' | grep -oP '(?<=V)\d+\.\d+')
+    exit_if_error $? "未能获取CUDA版本, 检测参数及环境是否正常." $?
+}
 fi
 
 #
@@ -263,6 +289,11 @@ export C2X2K_TARGET_PREFIX=${TARGET_PREFIX}
 #
 export C2X2K_TARGET_CUDA_PREFIX=${TARGET_CUDA_PREFIX}
 export C2X2K_TARGET_COMPILER_NVCC=${TARGET_COMPILER_NVCC}
+export C2X2K_TARGET_CUDA_TOOLKIT_NAME=${TARGET_CUDA_TOOLKIT_NAME}
+export C2X2K_TARGET_CUDA_WITH_CUDNN=${TARGET_CUDA_WITH_CUDNN}
+export C2X2K_TARGET_CUDA_WITH_NVCUVID=${TARGET_CUDA_WITH_NVCUVID}
+export C2X2K_TARGET_CUDA_WITH_NVCUVENC=${TARGET_CUDA_WITH_NVCUVENC}
+export C2X2K_TARGET_CUDA_VERSION=${TARGET_CUDA_VERSION}
 #
 export C2X2K_BUILD_NPROC=${BUILD_NPROC}
 #
@@ -373,7 +404,6 @@ KIT_LIST+=("openssh")
 KIT_LIST+=("boost")
 KIT_LIST+=("flann")
 KIT_LIST+=("octomap")
-KIT_LIST+=("opencv")
 
 
 #
@@ -395,9 +425,10 @@ echo "在${C2X2K_TARGET_MACHINE}平台不支持ZLMediaKit, 跳过."
 fi 
 
 KIT_LIST+=("qt5")
+KIT_LIST+=("opencv")
 
 #
-if [ -f "${C2X2K_TARGET_COMPILER_NVCC}" ] && [ -d "${C2X2K_TARGET_CUDA_PREFIX}" ];then
+if [ "${TARGET_CUDA_VERSION}" != "" ];then
 KIT_LIST+=("opencv-cuda")
 fi
 
@@ -414,6 +445,16 @@ for KIT_NAME in "${KIT_LIST[@]}"; do
     echo ">>>>>>>>>>>>>>>>>>>>>>>>>${KIT_NAME}>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 }
 done
+
+###########################################################################################################################################
+
+
+#清理可执行文件中的RUNPATH配置.
+if [ -f "${NATIVE_CHRPATH_BIN}" ];then
+find ${TARGET_PREFIX} -type f -executable -o -name *.so* -exec sh -c 'file -b "$1" | grep -q "ELF" && $2 -d "$1"' sh {} ${NATIVE_CHRPATH_BIN} \;
+else 
+echo "chrpath工具未安装, 未能清理可执行文件中的RUNPATH配置."
+fi
 
 ###########################################################################################################################################
 
