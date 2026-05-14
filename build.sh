@@ -67,6 +67,15 @@ exit_if_error()
 }
 
 #
+CheckHeader_C()
+# $1 COMPILER
+# $2 STD
+# $3 HEADER
+{
+    ${SHELLKITS_HOME}/tools/check-c-std-header.sh "$1" "$2" "$3"
+}
+
+#
 CompilerSelect()
 {
     ${SHELLKITS_HOME}/tools/print-compiler-conf.sh -d SOLUTION_PREFIX=C2X2K -d NATIVE_COMPILER_PREFIX="$1" -d TARGET_COMPILER_PREFIX="$2"
@@ -451,7 +460,9 @@ done
 
 #清理可执行文件中的RUNPATH配置.
 if [ -f "${NATIVE_CHRPATH_BIN}" ];then
-find ${TARGET_PREFIX} -type f -executable -o -name *.so* -exec sh -c 'file -b "$1" | grep -q "ELF" && $2 -d "$1"' sh {} ${NATIVE_CHRPATH_BIN} \;
+find ${TARGET_PREFIX}/bin -type f -exec sh -c 'file -b "$1" | grep -q "ELF" && $2 -d "$1"' sh {} ${NATIVE_CHRPATH_BIN} \; 2>>/dev/null
+find ${TARGET_PREFIX}/lib -type f -exec sh -c 'file -b "$1" | grep -q "ELF" && $2 -d "$1"' sh {} ${NATIVE_CHRPATH_BIN} \; 2>>/dev/null
+find ${TARGET_PREFIX}/lib${C2X2K_TARGET_BITWIDE} -type f -exec sh -c 'file -b "$1" | grep -q "ELF" && $2 -d "$1"' sh {} ${NATIVE_CHRPATH_BIN} \; 2>>/dev/null
 else 
 echo "chrpath工具未安装, 未能清理可执行文件中的RUNPATH配置."
 fi
