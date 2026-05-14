@@ -67,6 +67,15 @@ exit_if_error()
 }
 
 #
+CheckHeader_C()
+# $1 COMPILER
+# $2 STD
+# $3 HEADER
+{
+    ${SHELLKITS_HOME}/tools/check-c-std-header.sh "$1" "$2" "$3"
+}
+
+#
 CompilerSelect()
 {
     ${SHELLKITS_HOME}/tools/print-compiler-conf.sh -d SOLUTION_PREFIX=C2X2K -d NATIVE_COMPILER_PREFIX="$1" -d TARGET_COMPILER_PREFIX="$2"
